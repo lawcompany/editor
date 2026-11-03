@@ -10,7 +10,7 @@
 - [확인한 소스와 미검증 항목](./docs/source-audit.md)
 - [초기 장기 설계 보관본](./docs/editor-architecture-v1.md) · [초기 계약 보관본](./docs/editor-contracts-v1.md)
 
-**1·2단계의 회귀 기준선·편집기 기능 분리와 3단계 Word 웹 편집기를 구현했다.** 새 웹 모듈은 Electron·내장 AI 없이 실행하며, 기존 데스크톱 소스는 회귀 비교용으로 보존한다. Word의 브라우저 편집·DOCX 저장은 검증했고 실제 Microsoft Word 재열기는 미확인이다. 한글 편집 화면과 공개 React `OfficeEditor`는 이후 단계에서 구현한다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
+**1·2단계의 회귀 기준선·편집기 기능 분리와 3·4단계 Word·한글 웹 편집기를 구현했다.** 새 웹 모듈은 Electron·내장 AI 없이 실행하며, 기존 데스크톱 소스는 회귀 비교용으로 보존한다. Word와 한글의 브라우저 편집·원래 형식 저장은 검증했고 실제 Microsoft Word·한컴 한글 재열기는 미확인이다. 공개 React `OfficeEditor`는 5단계에서 구현한다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
 
 ## 실행
 
@@ -22,7 +22,7 @@ npm ci --ignore-scripts
 npm run dev:web
 ```
 
-<http://127.0.0.1:5190>에서 회귀 문서 11개를 읽고 해시를 확인하거나 다운로드할 수 있다. 로컬 파일은 브라우저 메모리에서만 읽는다. `/stage2.html`은 DOCX·HWP·HWPX의 실제 엔진 편집·저장·재열기와 추출 모듈을 검사하는 개발용 페이지다. `/word.html`은 3단계 Word 본문·서식·표 편집과 DOCX 다운로드 화면이다. 한글 studio는 아직 연결하지 않았다.
+<http://127.0.0.1:5190>에서 회귀 문서 11개를 읽고 해시를 확인하거나 다운로드할 수 있다. 로컬 파일은 브라우저 메모리에서만 읽는다. `/stage2.html`은 DOCX·HWP·HWPX의 실제 엔진 편집·저장·재열기와 추출 모듈을 검사하는 개발용 페이지다. `/word.html`은 3단계 Word 본문·서식·표 편집과 DOCX 다운로드 화면이다. `/hangul.html`은 4단계 한글 studio·HWP/HWPX 저장·메모·인쇄 미리보기 화면이다. 첫 실행은 고정된 studio 소스와 한자 사전을 내려받아 로컬 웹 자산을 만든다.
 
 ```sh
 npm run check:baseline

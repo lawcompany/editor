@@ -31,3 +31,5 @@ tools/ooxml-validate/schemas/
 apps/shell/resources/builtin-skills/*/
 # Captured consumer output is byte-sensitive regression data.
 /baseline/longform/*.md
+packages/editor/assets/
+web/public/editor-assets/

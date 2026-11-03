@@ -1,6 +1,12 @@
-import { copyFileSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs'
+import { copyFileSync, cpSync, mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fixtureBytes, readJson, root, sha256 } from './paths.mjs'
+import { prepareHangulAssets } from './prepare-hangul-assets.mjs'
+
+const studio = prepareHangulAssets()
+const webStudio = resolve(root, 'web/public/editor-assets/studio')
+rmSync(webStudio, { recursive: true, force: true })
+cpSync(studio, webStudio, { recursive: true })
 
 const target = resolve(root, 'web/public/baseline')
 const manifest = readJson('baseline/fixtures.json')

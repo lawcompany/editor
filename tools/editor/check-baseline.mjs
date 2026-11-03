@@ -15,8 +15,10 @@ const extraction = readJson('baseline/stage-2-extraction.json')
 assert.equal(extraction.upstream, upstream.commit)
 const word = readJson('baseline/stage-3-word.json')
 assert.equal(word.upstream, upstream.commit)
+const hangul = readJson('baseline/stage-4-hangul.json')
+assert.equal(hangul.upstream, upstream.commit)
 const changes = new Map()
-for (const stage of [extraction, word]) {
+for (const stage of [extraction, word, hangul]) {
   assert.equal(
     new Set(stage.changes.map((file) => file.path)).size,
     stage.changes.length,
@@ -63,7 +65,7 @@ function find(path, predicate) {
   assert.equal(matches.length, 1, `Expected one declaration in ${path}`)
   return matches[0]
 }
-for (const file of [...extraction.extracted, ...word.extracted]) {
+for (const file of [...extraction.extracted, ...word.extracted, ...hangul.extracted]) {
   for (const name of file.symbols) {
     find(
       file.path,

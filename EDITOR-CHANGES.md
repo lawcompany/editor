@@ -29,3 +29,10 @@ The public React `OfficeEditor`, full Word/Hangul UI and external Word/Hancom co
 - Share ribbon commands, table grid helpers, inline formatting inheritance, layout settings and chart save parts with desktop callers. Preserve the original DOCX baseline, narrow XML/ZIP patching and document identifiers.
 - Add atomic loading, dirty state, failed-write retention, browser downloads, protected-document read-only mode, expired selection checks and guarded external edits.
 - Verify DOCX browser editing/download/reopening, original parts, longform limitations and desktop regressions. Actual Microsoft Word reopening remains unverified because Word is not installed. See `docs/stage-3-word-web.md`.
+
+2026-11-03 — Stage 4 of `@lawcompany/editor`:
+
+- Connect the pinned rhwp embedded studio and all 56 plugin methods to `/hangul.html`, with HWP/HWPX load, editing, same-format download, dirty/error state and browser printing.
+- Reuse the desktop save flow, tab/field/tail corrections and memo preservation checks. Share the memo panel through host/locale injection, retaining desktop adapters.
+- Package same-origin studio/WASM/plugin/font/dictionary assets with licenses, hashes and a separate dependency audit. Keep engine bytes and document identifiers unchanged.
+- Validate browser input, undo/redo, body/table edits, HWP/HWPX save/reopen and memo preservation. Actual Hancom reopening remains unverified; see `docs/stage-4-hangul-web.md`.

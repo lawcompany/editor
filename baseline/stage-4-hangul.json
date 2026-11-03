@@ -1,0 +1,33 @@
+{
+  "upstream": "af65e7a0e36b7536504695d9a46449da070a578c",
+  "changes": [
+    {
+      "path": "apps/hwp/scripts/build-studio.mjs",
+      "sha256": "2ceb3eb7a4ccea71731d1e0064ec1abd06ae1ab0a0886b8c8254920f46973c14",
+      "reason": "Stage 4: browser studio asset profile and shared memo-loss checks; preserve desktop behavior."
+    },
+    {
+      "path": "apps/hwp/src/main/memos.ts",
+      "sha256": "39067ef015ef8829fe5cfdc20dbf1020728c7a510fd1d02fd899a771e53773b3",
+      "reason": "Stage 4: browser studio asset profile and shared memo-loss checks; preserve desktop behavior."
+    }
+  ],
+  "extracted": [
+    {
+      "path": "apps/hwp/src/shared/document/memos.ts",
+      "symbols": ["lostMemoCountOf"]
+    },
+    {
+      "path": "apps/hwp/src/shared/document/save-plan.ts",
+      "symbols": ["bytesMatchFormat", "withFormatExtension"]
+    },
+    {
+      "path": "packages/editor/src/hangul-session.ts",
+      "symbols": ["createHangulSession"]
+    },
+    {
+      "path": "apps/hwp/src/renderer/memo-panel-view.tsx",
+      "symbols": ["MemoPanelView", "memoBodyProblem", "canEditMemo", "sortMemos"]
+    }
+  ]
+}

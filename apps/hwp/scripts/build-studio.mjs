@@ -39,6 +39,7 @@ import {
   rhwpPatches,
 } from './rhwp-patches.mjs'
 import { HANJA_COMMIT, writeHanjaDictionary } from './hanja-dict.mjs'
+import { webStudioPlugins, copyWebStudioAssets } from '../../../tools/editor/hangul-assets.mjs'
 
 const SCRIPTS = dirname(fileURLToPath(import.meta.url))
 const APP = resolve(SCRIPTS, '..')
@@ -74,7 +75,10 @@ const SPARSE_PATTERNS = [
 ]
 
 const CACHE = join(APP, 'node_modules', '.cache', 'rhwp-studio', TAG)
-const OUT = join(APP, 'public', 'studio')
+const WEB = process.argv.includes('--web')
+const OUT = WEB
+  ? resolve(APP, '../../packages/editor/assets/studio')
+  : join(APP, 'public', 'studio')
 const AGENT_PLUGIN = join(APP, 'studio-plugin', 'agent-plugin.mjs')
 const DIALOG_THEME = join(APP, 'studio-plugin', 'dialog-theme.mjs')
 const HANCOM_KEYS = join(APP, 'studio-plugin', 'hancom-keys.mjs')
@@ -97,6 +101,11 @@ function git(args, cwd) {
 function stampValue() {
   const hash = createHash('sha256')
   hash.update(TAG)
+  hash.update(String(WEB))
+  if (WEB) {
+    hash.update(readFileSync(resolve(APP, '../../tools/editor/hangul-assets.mjs')))
+    hash.update(readFileSync(resolve(APP, '../../tools/editor/web-boundary.mjs')))
+  }
   for (const file of ['build-studio.mjs', 'rhwp-patches.mjs', 'hanja-dict.mjs']) {
     hash.update(readFileSync(join(SCRIPTS, file)))
   }
@@ -210,7 +219,7 @@ async function buildStudio() {
     },
     // upstream registers a service worker for its website build; this build
     // leaves that plugin out, a custom scheme cannot register one
-    plugins: [rhwpPatches(...STUDIO_PATCHES)],
+    plugins: [rhwpPatches(...STUDIO_PATCHES), ...(WEB ? webStudioPlugins() : [])],
     build: { outDir: OUT, emptyOutDir: true, chunkSizeWarningLimit: 4096 },
   })
   // the licenses travel with the build: rhwp's own, and the list of what its WASM links in
@@ -218,6 +227,7 @@ async function buildStudio() {
   copyFileSync(join(CACHE, 'THIRD_PARTY_LICENSES.md'), join(OUT, 'THIRD-PARTY-LICENSES-rhwp.md'))
   // the Hanja dictionary the editor reads on the first conversion, with its notice
   await writeHanjaDictionary(HANJA_CACHE, join(OUT, 'hanja'))
+  if (WEB) copyWebStudioAssets(OUT)
 }
 
 const force = process.argv.includes('--force')
