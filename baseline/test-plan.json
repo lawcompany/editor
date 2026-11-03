@@ -1,0 +1,95 @@
+{
+  "upstream": "af65e7a0e36b7536504695d9a46449da070a578c",
+  "groups": [
+    {
+      "id": "docx-engine",
+      "cwd": "packages/docx-engine",
+      "files": ["tests/roundtrip.test.ts"],
+      "purpose": "OOXML 원본·ZIP parts 보존, 편집 저장, 가리기 메타데이터"
+    },
+    {
+      "id": "word-renderer",
+      "cwd": "apps/docs",
+      "files": [
+        "tests/ai-edit-queue.test.ts",
+        "tests/ai-rewrite-formatting.test.ts",
+        "tests/ai-rewrite-table-formatting.test.ts",
+        "tests/ai-rollback-snapshot.test.ts",
+        "tests/ai-track-revisions.test.ts",
+        "tests/html-export.test.ts",
+        "tests/redact-image-mark.test.ts",
+        "tests/redact-live-text.test.ts",
+        "tests/redact-range.test.ts",
+        "tests/redact-ui.test.ts",
+        "tests/redact-write-guard.test.ts",
+        "tests/redact.test.ts",
+        "tests/redaction-docx.test.ts"
+      ],
+      "purpose": "선택·서식 상속·변경 표시·복원·외부 전달 뷰"
+    },
+    {
+      "id": "markdown",
+      "cwd": "apps/markdown",
+      "files": [
+        "tests/edit-queue-redaction.test.ts",
+        "tests/redact-agent-view.test.ts",
+        "tests/redact-cross-file-parity.test.ts",
+        "tests/redact-json.test.ts",
+        "tests/redact-menu.test.ts",
+        "tests/redaction-mark.test.ts",
+        "tests/redaction-persistence.test.ts",
+        "tests/roundtrip-serializer.test.ts"
+      ],
+      "purpose": "원문 직렬화·가린 선택·큐 위치 복원"
+    },
+    {
+      "id": "redaction",
+      "cwd": "packages/agent-core",
+      "files": ["tests/redact-core.test.ts", "tests/redact-range.test.ts"],
+      "purpose": "이관할 순수 문서 함수"
+    },
+    {
+      "id": "hangul",
+      "cwd": "apps/hwp",
+      "files": [
+        "tests/agent-bridge.test.ts",
+        "tests/agent-plugin-delete-table.test.ts",
+        "tests/agent-plugin-dirty.test.ts",
+        "tests/agent-plugin-duplicate-fields.test.ts",
+        "tests/agent-plugin-engine.test.ts",
+        "tests/agent-plugin-file-menu.test.ts",
+        "tests/agent-plugin-font.test.ts",
+        "tests/agent-plugin-format.test.ts",
+        "tests/agent-plugin-marks.test.ts",
+        "tests/agent-plugin-memo-guard.test.ts",
+        "tests/agent-plugin-memos.test.ts",
+        "tests/agent-plugin-merge.test.ts",
+        "tests/agent-plugin-nested-budget.test.ts",
+        "tests/agent-plugin-notes.test.ts",
+        "tests/agent-plugin-pictures.test.ts",
+        "tests/agent-plugin-profile.test.ts",
+        "tests/agent-plugin-styles.test.ts",
+        "tests/agent-plugin-tables.test.ts",
+        "tests/agent-plugin-tabs.test.ts",
+        "tests/agent-plugin-toc.test.ts",
+        "tests/agent-plugin.test.ts",
+        "tests/engine-memos.test.ts",
+        "tests/field-kinds.test.ts",
+        "tests/recovery-roundtrip.test.ts",
+        "tests/save-conflict.test.ts",
+        "tests/save-flow.test.ts",
+        "tests/save-plan.test.ts",
+        "tests/section-tails.test.ts",
+        "tests/tab-widths.test.ts",
+        "tests/tracked-changes.test.ts"
+      ],
+      "purpose": "56개 bridge·실제 WASM·동일 형식 저장·메모/바탕쪽/탭 보정"
+    },
+    {
+      "id": "web-baseline",
+      "cwd": "web",
+      "files": ["tests/fixture-roundtrip.test.ts"],
+      "purpose": "고정 DOCX/HWP/HWPX corpus의 엔진 왕복"
+    }
+  ]
+}
