@@ -5,7 +5,11 @@ export default defineConfig({
   plugins: [webBoundary('stage 2 editor modules')],
   build: {
     lib: {
-      entry: { index: 'src/index.ts', 'word-browser': 'src/word-browser.ts' },
+      entry: {
+        index: 'src/index.ts',
+        'word-browser': 'src/word-browser.ts',
+        'hangul-browser': 'src/hangul-browser.ts',
+      },
       formats: ['es'],
       fileName: (_format, name) => `${name}.js`,
     },

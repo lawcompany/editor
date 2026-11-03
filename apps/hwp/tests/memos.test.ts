@@ -16,7 +16,7 @@ const { memoList, rawCount } = vi.hoisted(() => ({
 }))
 
 vi.mock('@genoffice/file-parse', () => ({ hwpMemosOf: memoList }))
-vi.mock('../src/main/tab-widths', () => ({ hwpxMemoCountOf: rawCount }))
+vi.mock('../src/shared/document/tab-widths', () => ({ hwpxMemoCountOf: rawCount }))
 
 const { lostMemoCountOf } = await import('../src/main/memos')
 

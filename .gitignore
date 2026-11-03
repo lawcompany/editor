@@ -57,4 +57,5 @@ _scratch-*
 
 # Stage 2 browser modules and verification assets
 packages/editor/dist/
+packages/editor/assets/
 web/public/editor-assets/

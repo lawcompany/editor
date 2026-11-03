@@ -1,0 +1,70 @@
+@import '@genoffice/ui/tokens.css';
+@import '../../../apps/hwp/src/renderer/memo-panel.css';
+@import '../../../apps/hwp/src/renderer/dialog-theme.css';
+
+.lc-hangul {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  color: var(--text);
+  background: var(--surface);
+  font:
+    14px system-ui,
+    sans-serif;
+}
+.lc-hangul-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.lc-hangul-bar strong {
+  margin-right: auto;
+}
+.lc-hangul button {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+.lc-hangul button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.lc-hangul-notice {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.lc-hangul-host {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.lc-hangul-frame {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+}
+.lc-hangul-frame iframe {
+  display: block;
+}
+
+.lc-hangul-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.lc-hangul-memos {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+}
+.lc-hangul-memos[hidden] {
+  display: none;
+}

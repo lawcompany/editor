@@ -15,6 +15,7 @@ export default defineConfig({
         main: resolve('index.html'),
         stage2: resolve('stage2.html'),
         word: resolve('word.html'),
+        hangul: resolve('hangul.html'),
       },
     },
   },
