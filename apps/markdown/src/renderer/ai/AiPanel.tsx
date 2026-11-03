@@ -1,3 +1,4 @@
+import type { DocSnapshot } from '../editor/history'
 import {
   aiPanelWidthAtPointer,
   AiPanelSideButton,
@@ -196,12 +197,7 @@ const SCOPE_TEXT_MAX = 200
 
 /** structured, not the serialized file text: a body starting with `---` must
  *  never be re-parsed as a frontmatter block on rollback */
-export interface DocSnapshot {
-  /** document body as markdown */
-  body: string
-  /** raw frontmatter block (fences included), kept byte-for-byte */
-  frontmatter: string
-}
+export type { DocSnapshot } from '../editor/history'
 
 interface Snapshot {
   label: string

@@ -88,7 +88,7 @@ const ALLOW = [
     reason: 'the acknowledgement and trademark paragraphs',
   },
   {
-    path: 'packages/agent-core/src/redact-range.ts',
+    path: 'packages/core/src/redaction/range.ts',
     span: /https:\/\/genspark\.ai\/genoffice\/redaction\/2026/g,
     reason:
       'XML namespace written into saved documents: changing it would stop reading redactions made with the original',

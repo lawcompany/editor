@@ -13,7 +13,7 @@ import {
 } from '@genoffice/ui'
 import { HwpAiDock } from './ai/AiDock'
 import { DocCheckPanel } from './check/DocCheckPanel'
-import { createAgentBridge } from './ai/agent-bridge'
+import { createAgentBridge } from './agent-bridge'
 import {
   DIRTY_EVENT,
   FILE_COMMAND_EVENT,

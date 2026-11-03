@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { applyRevisionResolutions, resolvePropChangeXml } from './revision-xml'
-import { REDACT_EL, REDACT_NS, REDACT_PREFIX } from '@genoffice/agent-core/redact-range'
+import { REDACT_EL, REDACT_NS, REDACT_PREFIX } from '@lawcompany/editor-core/redact-range'
 import {
   applyImageWrap,
   generateParagraphXml,

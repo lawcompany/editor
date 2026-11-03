@@ -19,7 +19,7 @@ import { createPortal } from 'react-dom'
 import { PRODUCT_NAME, type Params } from '@genoffice/i18n'
 import type { AgentMemo, AgentMemoAnchor } from '../../studio-plugin/agent-plugin.mjs'
 import { MEMO_NOT_COPIED_EVENT, MEMO_REMOVED_EVENT } from '../../studio-plugin/agent-plugin.mjs'
-import type { AgentBridge } from './ai/agent-bridge'
+import type { AgentBridge } from './agent-bridge'
 import { useI18n, type StringKey } from './i18n/locale'
 
 /** The longest memo body the engine takes, in UTF-16 units (spec 3.3). */

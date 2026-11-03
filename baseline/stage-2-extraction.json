@@ -1,0 +1,184 @@
+{
+  "upstream": "af65e7a0e36b7536504695d9a46449da070a578c",
+  "changes": [
+    {
+      "path": "packages/docx-engine/src/index.ts",
+      "sha256": "8c3357e1b48392c9bbde987da08735a90ec6443ec94d7dfc26850306cd5adb84",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/docx-engine/src/patch.ts",
+      "sha256": "e0c294169436edc839d2a1c183c01652e6cbfe86bd7f64fe56888a2ff1087b5e",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/docx-engine/package.json",
+      "sha256": "ab3c710e458499deedaa3ed9c4faff59ce45210619dfcea8b2201866cbc2bca5",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/protocol.ts",
+      "sha256": "9358347e249708ddf0f1c5a58f420835426baebad5b5e189800c3b425c79a52f",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/inherit-formatting.ts",
+      "sha256": "b375765c45376185f33ad39664a97db84a6465d1dc979b2474b6c2eb668f1b10",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/doc-utils.ts",
+      "sha256": "283bd414bae3c8125c54425987a2dbd2bf4848646072c7c3424047426478bc26",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/redact-view.ts",
+      "sha256": "f3a8c0f08aef8560a9952708817d38cc20655f3ca13936fc8883416c7b5e795b",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/rollback-snapshot.ts",
+      "sha256": "4c6f0252b14271e38a551d1c2536fa8725581794438a38de822118d875040838",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/edit-queue.ts",
+      "sha256": "4781266370b6db944af3d55131898c24595868e6d507c3384769a15717140d86",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/docs/src/renderer/ai/AiPanel.tsx",
+      "sha256": "1f2c2ffb83d54f6df2d013ca7a3506f7494ba538ba893f0266f50fdafec9781a",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/markdown/src/renderer/ai/tools.ts",
+      "sha256": "c5f002557836524ff4b2de336cc645b3e98d8c4cebe88f5d6a9ea43304537384",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/markdown/src/renderer/ai/edit-queue.ts",
+      "sha256": "4781266370b6db944af3d55131898c24595868e6d507c3384769a15717140d86",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/markdown/src/renderer/ai/AiPanel.tsx",
+      "sha256": "ab32a62d415cafc884f49dfe91af4cd43f2f78320a26c705b76ddae14196ff95",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/markdown/src/renderer/editor/redact.ts",
+      "sha256": "122e66d5e16f214f096b805e051e7c8103b8efb73b472817c4a22c7612e00817",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/agent-core/src/redact-core.ts",
+      "sha256": "e84af87ae9fa22b5a2fb8152da894926c363ed8bb82bf6d2ae7e02fdccf49f83",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/agent-core/src/redact-range.ts",
+      "sha256": "c1df5d177f04cd2bc92bc1d4f79f2c82ed8f670ea0f8f44230c5260f8cdabe59",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/renderer/App.tsx",
+      "sha256": "eb3d97738303cf9549227437696ef4382a04406eeb05ffaae2c15781e3da54aa",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/renderer/ai/agent-bridge.ts",
+      "sha256": "6e0799f93c236bf39eb77f8670b15b541f7a3a07becfe9368ce82f9a03267a89",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/main/save-fixes.ts",
+      "sha256": "ed0bdbd7949f645bfef3e7b530da973ca426ee14a66748cfff830c8fc54b9f27",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/main/section-tails.ts",
+      "sha256": "17f2ee11369df37207c32529217a7795bdd45451fa5e3a2e4deadbf331d19523",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/main/field-kinds.ts",
+      "sha256": "c96c27b2e1ea6e661b88ce61cc1e4602adb9315e28beb6f67742fc4a66fc1a19",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/main/tab-widths.ts",
+      "sha256": "9c4b1668ca281b219ad8061801cd014c4027c12989019949cd4dbb0d9836f44b",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "apps/hwp/src/main/tracked-changes.ts",
+      "sha256": "8e93a9467c621f040b2563568c7bb97e06ed708c6c0700883043d79782dc8add",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/agent-core/package.json",
+      "sha256": "ba71f180851918c32fbe8393795915356af983375b1ef1f8f7ebdee3c27df816",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    },
+    {
+      "path": "packages/ui/package.json",
+      "sha256": "01dc643fdf0625092d0cb3a9bc85a74b43ff9125126a302a544e13c213a4efeb",
+      "reason": "Extract document functions into browser modules; retain desktop compatibility exports."
+    }
+  ],
+  "extracted": [
+    {
+      "path": "packages/core/src/redaction/markers.ts",
+      "symbols": ["sanitizeLabel", "placeholderSource", "collectPlaceholders", "checkPlaceholders"]
+    },
+    {
+      "path": "packages/core/src/redaction/range.ts",
+      "symbols": ["redactTextBetween", "withheldNodeSize"]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/content.ts",
+      "symbols": [
+        "getSelectionScope",
+        "partialSelection",
+        "serializeRangeToHtml",
+        "parseHtmlFragment",
+        "replaceBlockRange",
+        "replaceInlineRange",
+        "inheritBlockFormatting"
+      ]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/changes.ts",
+      "symbols": ["clearChangeIndicators", "acceptChanges"]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/rollback-snapshot.ts",
+      "symbols": ["captureRollbackSnapshot", "restoreRollbackSnapshot"]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/edit-queue.ts",
+      "symbols": ["resolveQueueItem", "selectionForAnchor"]
+    },
+    {
+      "path": "apps/markdown/src/renderer/editor/serialization.ts",
+      "symbols": ["buildDocContext", "serializeBlocks", "selectionMarkdown"]
+    },
+    {
+      "path": "apps/markdown/src/renderer/editor/history.ts",
+      "symbols": ["captureSnapshot", "restoreSnapshot"]
+    },
+    {
+      "path": "apps/markdown/src/renderer/editor/edit-queue.ts",
+      "symbols": ["resolveQueueItem", "selectionForAnchor"]
+    },
+    {
+      "path": "apps/hwp/src/renderer/agent-bridge.ts",
+      "symbols": ["createAgentBridge"]
+    },
+    {
+      "path": "apps/hwp/src/shared/document/save-fixes.ts",
+      "symbols": ["applySaveFixes"]
+    }
+  ]
+}

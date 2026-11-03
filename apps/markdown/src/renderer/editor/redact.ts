@@ -19,35 +19,15 @@
  *   it again restores the same document with the span still marked.
  */
 
-import {
-  placeholderInstruction as buildInstruction,
-  placeholderSource,
-  type PlaceholderSpec,
-} from '@genoffice/agent-core/redact-core'
+import { placeholderSource } from '@lawcompany/editor-core/redact-core'
 
 import {
   redactTextBetween as sharedRedactTextBetween,
   type WithheldNode,
-} from '@genoffice/agent-core/redact-range'
+} from '@lawcompany/editor-core/redact-range'
 
 /** The mark's node name, shared so the mark, the model view and the guard agree. */
 export const REDACT_MARK = 'redaction'
-
-/** What this editor's markers need that another's do not. */
-const MARKDOWN_SPEC: PlaceholderSpec = {
-  subject: 'document',
-  opening:
-    'Each one stands in for text the reader has deliberately withheld from you; you cannot see what is inside and that is the point.',
-  boundary: 'a line break',
-  middle: [
-    'Write the prose around them as if each stood for the words it replaces, so "call {{client phone}}" reads as a natural instruction to phone someone.',
-    'If a request needs what a placeholder hides, write around it rather than guessing.',
-  ],
-}
-
-export function placeholderInstruction(labels: readonly string[]): string {
-  return buildInstruction(labels, MARKDOWN_SPEC)
-}
 
 /**
  * The model-facing view of a document: every withheld span becomes its marker
@@ -225,4 +205,4 @@ export {
   readPlaceholderLabel,
   sanitizeLabel,
   type PlaceholderIssue,
-} from '@genoffice/agent-core/redact-core'
+} from '@lawcompany/editor-core/redact-core'

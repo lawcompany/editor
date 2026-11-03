@@ -12,5 +12,10 @@
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [
+    "src",
+    "vite.config.ts",
+    "../apps/docs/src/renderer/env.d.ts",
+    "../apps/markdown/src/renderer/env.d.ts"
+  ]
 }

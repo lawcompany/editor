@@ -1,10 +1,9 @@
-import { modelTextOf, redactJson, redactTextBetween } from '../editor/redact'
-import type { Editor, JSONContent } from '@tiptap/core'
+import { serializeBlocks, buildDocContext as readDocContext } from '../editor/serialization'
+import type { Editor } from '@tiptap/core'
 import type { Node as PmNode } from '@tiptap/pm/model'
 import type { AgentToolCall, AgentToolDef, ToolExecution } from '@genoffice/agent-core'
 import {
   OP_SPECS,
-  blockIndexRange,
   buildOpsGuide,
   isBlankDoc,
   parseMarkdownToNodes,
@@ -27,7 +26,6 @@ export type { FrontmatterAccess } from '../editor/ops'
 export { blockIndexRange } from '../editor/ops'
 
 const CONTEXT_MAX_CHARS = 8000
-const PREVIEW_CHARS = 60
 const READ_PAGE_CHARS = 24000
 const SELECTION_MAX_CHARS = 4000
 
@@ -51,79 +49,34 @@ function editedExternally(editor: Editor): boolean {
 
 // ── document skeleton / serialization helpers ──
 
-function blockPreview(node: PmNode): string {
-  // modelTextOf, not textContent: a withheld span must not reach the preview
-  const text = modelTextOf(node.toJSON() as never)
-    .replace(/\s+/g, ' ')
-    .trim()
-  return text.length > PREVIEW_CHARS ? `${text.slice(0, PREVIEW_CHARS)}…` : text
-}
-
-function blockLabel(node: PmNode): string {
-  if (node.type.name === 'heading') return `h${node.attrs.level}`
-  // a paragraph holding only a picture reads better as the picture
-  if (node.isTextblock && !node.textContent && node.childCount === 1 && node.firstChild?.isAtom) {
-    return node.firstChild.type.name
-  }
-  return node.type.name
-}
-
-/**
- * Serialize a range of top-level blocks back to markdown, as the model sees it.
- *
- * Withheld spans are replaced by their markers here, on the way out, so the
- * text under them is never serialized at all — the only place documents are
- * turned into something that leaves the machine. Saving does not come through
- * here; it renders the real text.
- */
-function serializeBlocks(editor: Editor, from: number, to: number): string {
-  const content: JSONContent[] = []
-  editor.state.doc.forEach((node, _offset, index) => {
-    if (index >= from && index <= to) content.push(node.toJSON() as JSONContent)
-  })
-  return editor.markdown?.serialize(redactJson({ type: 'doc', content })) ?? ''
-}
-
-function selectionMarkdown(editor: Editor): string {
-  const { from, to } = editor.state.selection
-  if (from === to) return ''
-  // same reason as blockPreview — the selection is document text going out —
-  // and the offsets are ProseMirror's: a flat string sliced with them
-  // misquotes every selection after the first block
-  const text = redactTextBetween(editor.getJSON() as never, from, to)
-  return text.length > SELECTION_MAX_CHARS ? `${text.slice(0, SELECTION_MAX_CHARS)}…` : text
-}
-
-/** Per-turn context: numbered block skeleton + selection, same shape as the docs agent */
+/** Legacy prompt formatting stays outside the browser editor modules. */
 export function buildDocContext(editor: Editor): string {
-  const doc = editor.state.doc
-  const blockCount = doc.childCount
-  if (isBlankDoc(doc)) {
-    return ['## Document state', 'The document is currently blank.'].join('\n')
+  const context = readDocContext(editor, CONTEXT_MAX_CHARS)
+  if (context.blank) return ['## Document state', 'The document is currently blank.'].join('\n')
+  const lines = ['## Document state', `${context.blockCount} top-level blocks:`, '']
+  for (const block of context.blocks)
+    lines.push(`${block.index} | ${block.type} | ${block.preview}`)
+  if (context.blocks.length < context.blockCount) {
+    lines.push(
+      `… (${context.blockCount - context.blocks.length} more blocks; use read_blocks to view them)`,
+    )
   }
-  const lines: string[] = ['## Document state', `${blockCount} top-level blocks:`, '']
-  let used = 0
-  for (let i = 0; i < blockCount; i++) {
-    const node = doc.child(i)
-    const line = `${i} | ${blockLabel(node)} | ${blockPreview(node)}`
-    used += line.length + 1
-    if (used > CONTEXT_MAX_CHARS) {
-      lines.push(`… (${blockCount - i} more blocks; use read_blocks to view them)`)
-      break
-    }
-    lines.push(line)
-  }
-  // report by range, not by text: a selected image/table has no text but the
-  // model still needs to know which block the request targets
-  const { from: selFrom, to: selTo } = editor.state.selection
-  if (selFrom < selTo) {
-    const { startIndex, endIndex } = blockIndexRange(doc, selFrom, selTo)
+  if (context.selection) {
+    const { startIndex, endIndex, text } = context.selection
     const where =
       startIndex === endIndex ? `block ${startIndex}` : `blocks ${startIndex}-${endIndex}`
-    const selection =
-      selectionMarkdown(editor) ||
-      `(a non-text block is selected: ${blockLabel(doc.child(startIndex))})`
-    lines.push('', `## User selection (${where})`, selection)
+    const selected =
+      text.length > SELECTION_MAX_CHARS ? `${text.slice(0, SELECTION_MAX_CHARS)}…` : text
+    const node = editor.state.doc.child(startIndex)
+    const kind =
+      node.isTextblock && !node.textContent && node.childCount === 1 && node.firstChild?.isAtom
+        ? node.firstChild.type.name
+        : node.type.name
+    lines.push(
+      '',
+      `## User selection (${where})`,
+      selected || `(a non-text block is selected: ${kind})`,
+    )
   }
   return lines.join('\n')
 }

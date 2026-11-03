@@ -5,6 +5,10 @@ on:
   pull_request:
     paths:
       - 'web/**'
+      - 'packages/**'
+      - 'apps/docs/**'
+      - 'apps/markdown/**'
+      - 'apps/hwp/**'
       - 'baseline/**'
       - 'tools/editor/**'
       - 'package*.json'
@@ -26,7 +30,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx eslint web tools/editor
+      - run: npx eslint web tools/editor packages/editor packages/core
       - run: npm run check:baseline
       - run: npm run test:baseline
+      - run: npm run check:hangul-parity
+      - run: npm run typecheck:editor
+      - run: npm run test:editor
+      - run: npm run build:editor
       - run: npm run build:web

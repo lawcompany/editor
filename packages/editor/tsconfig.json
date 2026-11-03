@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"]
+  },
+  "include": [
+    "src",
+    "tests",
+    "../../apps/hwp/src/shared/document/pako-types.ts",
+    "../../apps/docs/src/renderer/env.d.ts",
+    "../../apps/markdown/src/renderer/env.d.ts"
+  ]
+}

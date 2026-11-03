@@ -1,3 +1,4 @@
+import { TABLE_TRAILING_SKIP } from './transaction-meta'
 import { ScriptFonts } from './script-fonts'
 import { Editor, Extension, Node } from '@tiptap/core'
 import { SHAPE_INLINE_WRAP } from './floating-z-order'
@@ -4053,7 +4054,7 @@ export function deleteSelectedWholeTable(
 }
 
 /** transaction meta: document load/stream paths that must not get a trailing paragraph appended mid-stream */
-export const TABLE_TRAILING_SKIP = 'tableTrailingSkip'
+export { TABLE_TRAILING_SKIP } from './transaction-meta'
 
 export const NativeTableSupport = Extension.create({
   name: 'nativeTableSupport',

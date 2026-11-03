@@ -230,14 +230,14 @@ describe('check-no-genspark', () => {
 
   it('allows the namespace written into documents only on its own line', () => {
     commit({
-      'packages/agent-core/src/redact-range.ts': [
+      'packages/core/src/redaction/range.ts': [
         "export const REDACT_NS = 'https://genspark.ai/genoffice/redaction/2026'",
         "export const OTHER = 'https://genspark.ai/other'",
       ].join('\n'),
     })
     const r = check()
     expect(r.code).toBe(1)
-    expect(reportedLines(r.stderr, 'packages/agent-core/src/redact-range.ts')).toEqual([2])
+    expect(reportedLines(r.stderr, 'packages/core/src/redaction/range.ts')).toEqual([2])
   })
 
   it('allows the old ids in the settings migration fixture, but no other pattern there', () => {

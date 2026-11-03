@@ -25,7 +25,9 @@
     "./image-dialogs.css": "./src/image-dialogs.css",
     "./image-viewer.css": "./src/image-viewer.css",
     "./fonts/*": "./src/fonts/*",
-    "./ai-model-picker.css": "./src/ai-model-picker.css"
+    "./ai-model-picker.css": "./src/ai-model-picker.css",
+    "./wordart-presets": "./src/wordart-presets.ts",
+    "./font-list": "./src/font-list.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

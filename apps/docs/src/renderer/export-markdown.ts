@@ -1,6 +1,6 @@
 import type { Editor } from '@tiptap/core'
-import { isTrackedDeleted } from './ai/doc-utils'
-import { serializeRangeToHtml } from './ai/protocol'
+import { isTrackedDeleted } from './editor/doc-utils'
+import { serializeRangeToHtml } from './editor/content'
 import { MARKDOWN_MEDIA_DIR_TOKEN, type MarkdownImage } from '../shared/ipc'
 
 export interface MarkdownExport {

@@ -1,6 +1,6 @@
 import { Mark, type Editor } from '@tiptap/core'
 import { REDACT_EL } from '@genoffice/docx-engine'
-import { REDACT_MARK } from '../ai/redact'
+import { REDACT_MARK } from './redact'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
