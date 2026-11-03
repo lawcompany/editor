@@ -1,0 +1,21 @@
+{
+  "description": "Synthetic regression documents for the current consumer HTML/Markdown/UTF-16 marker behavior. No production documents.",
+  "cases": [
+    {
+      "id": "longform-formatting",
+      "html": "<h1>검토 의견</h1><p>합성 문서의 <strong>굵은 글씨</strong>와 <em>기울임</em>, <u>밑줄</u>입니다.</p><p></p><p>첫 줄<br>둘째 줄</p><ul><li>확인할 항목</li><li>다음 항목</li></ul><ol><li>첫 순서</li><li>둘째 순서</li></ol><blockquote><p>검토를 위한 인용문입니다.</p></blockquote>"
+    },
+    {
+      "id": "longform-selection",
+      "html": "<p>한글 😀 앞부분 <mark>선택한 한글 🧑‍⚖️</mark> 뒷부분</p><p><mark>다음 문단의 선택</mark>과 나머지</p>"
+    },
+    {
+      "id": "longform-table-links",
+      "html": "<h2>자료 검토</h2><p>자료 [1]은 <a href=\"https://example.com/reference\">합성 참고자료</a>입니다.</p><table><thead><tr><th>항목</th><th>내용</th></tr></thead><tbody><tr><td>검토</td><td>첫째</td></tr><tr><td>상태</td><td>확인 중</td></tr></tbody></table>"
+    },
+    {
+      "id": "longform-escaping",
+      "html": "<p>경로 C:\\sample\\document, 별표 * 와 밑줄 _</p><p></p><p>마지막 줄<br></p>"
+    }
+  ]
+}

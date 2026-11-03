@@ -1,0 +1,55 @@
+{
+  "source": {
+    "repository": "sl-app-fe",
+    "commit": "384779bc269927839e2abda7d54c33842165911a",
+    "path": "apps/saas/utils/editor.ts",
+    "sha256": "83c03c06067b26f36a35430c1b4d0d45e23d9a868bfd271e7ae920b2124fb72a",
+    "scope": "HTML to Markdown, removeMarkTags, getMarkedPosition; no reverse conversion or editor mount"
+  },
+  "cases": [
+    {
+      "id": "longform-formatting",
+      "html": "<h1>검토 의견</h1><p>합성 문서의 <strong>굵은 글씨</strong>와 <em>기울임</em>, <u>밑줄</u>입니다.</p><p></p><p>첫 줄<br>둘째 줄</p><ul><li>확인할 항목</li><li>다음 항목</li></ul><ol><li>첫 순서</li><li>둘째 순서</li></ol><blockquote><p>검토를 위한 인용문입니다.</p></blockquote>",
+      "markedMarkdown": "# 검토 의견\n\n합성 문서의 **굵은 글씨**와 *기울임*, <u>밑줄</u>입니다.\n\n<p></p>\n\n첫 줄\n둘째 줄\n\n* 확인할 항목\n* 다음 항목\n\n1. 첫 순서\n2. 둘째 순서\n\n> 검토를 위한 인용문입니다.",
+      "storedMarkdown": "# 검토 의견\n\n합성 문서의 **굵은 글씨**와 *기울임*, <u>밑줄</u>입니다.\n\n<p></p>\n\n첫 줄\n둘째 줄\n\n* 확인할 항목\n* 다음 항목\n\n1. 첫 순서\n2. 둘째 순서\n\n> 검토를 위한 인용문입니다.",
+      "selection": {
+        "start": 0,
+        "end": 0,
+        "text": ""
+      }
+    },
+    {
+      "id": "longform-selection",
+      "html": "<p>한글 😀 앞부분 <mark>선택한 한글 🧑‍⚖️</mark> 뒷부분</p><p><mark>다음 문단의 선택</mark>과 나머지</p>",
+      "markedMarkdown": "한글 😀 앞부분 <mark>선택한 한글 🧑‍⚖️</mark> 뒷부분\n\n<mark>다음 문단의 선택</mark>과 나머지",
+      "storedMarkdown": "한글 😀 앞부분 선택한 한글 🧑‍⚖️ 뒷부분\n\n다음 문단의 선택과 나머지",
+      "selection": {
+        "start": 10,
+        "end": 37,
+        "text": "선택한 한글 🧑‍⚖️ 뒷부분\n\n다음 문단의 선택"
+      }
+    },
+    {
+      "id": "longform-table-links",
+      "html": "<h2>자료 검토</h2><p>자료 [1]은 <a href=\"https://example.com/reference\">합성 참고자료</a>입니다.</p><table><thead><tr><th>항목</th><th>내용</th></tr></thead><tbody><tr><td>검토</td><td>첫째</td></tr><tr><td>상태</td><td>확인 중</td></tr></tbody></table>",
+      "markedMarkdown": "## 자료 검토\n\n자료 [1]은 [합성 참고자료](https://example.com/reference)입니다.\n\n| 항목 | 내용   |\n| -- | ---- |\n| 검토 | 첫째   |\n| 상태 | 확인 중 |",
+      "storedMarkdown": "## 자료 검토\n\n자료 [1]은 [합성 참고자료](https://example.com/reference)입니다.\n\n| 항목 | 내용   |\n| -- | ---- |\n| 검토 | 첫째   |\n| 상태 | 확인 중 |",
+      "selection": {
+        "start": 0,
+        "end": 0,
+        "text": ""
+      }
+    },
+    {
+      "id": "longform-escaping",
+      "html": "<p>경로 C:\\sample\\document, 별표 * 와 밑줄 _</p><p></p><p>마지막 줄<br></p>",
+      "markedMarkdown": "경로 C:sampledocument, 별표 * 와 밑줄 _\n\n<p></p>\n\n마지막 줄",
+      "storedMarkdown": "경로 C:sampledocument, 별표 * 와 밑줄 _\n\n<p></p>\n\n마지막 줄",
+      "selection": {
+        "start": 0,
+        "end": 0,
+        "text": ""
+      }
+    }
+  ]
+}

@@ -29,3 +29,5 @@ tools/ooxml-validate/schemas/
 
 # Built-in skills: third-party skill files kept byte-identical to upstream (see NOTICE).
 apps/shell/resources/builtin-skills/*/
+# Captured consumer output is byte-sensitive regression data.
+/baseline/longform/*.md

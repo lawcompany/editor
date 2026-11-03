@@ -48,3 +48,9 @@ _scratch-*
 # Local planning and agent state (never committed)
 .dryforge
 .omc
+
+# Generated web baseline assets and local verification reports.
+/web/public/baseline/
+/artifacts/
+/.playwright-cli/
+/output/playwright/

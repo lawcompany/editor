@@ -14,7 +14,8 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "web"
   ],
   "scripts": {
     "postinstall": "install-electron",
@@ -45,7 +46,13 @@
     "free-models:trial": "node tools/trial-free-models.mjs",
     "dist:mac": "npm run notices && npm run build:all && npm run native:build:universal -w @genoffice/sheets && npm run dist:mac -w @genoffice/shell",
     "dist:win": "npm run notices && npm run build:all && npm run dist:win -w @genoffice/shell",
-    "dist:linux": "npm run notices && npm run build:all && npm run dist:linux -w @genoffice/shell"
+    "dist:linux": "npm run notices && npm run build:all && npm run dist:linux -w @genoffice/shell",
+    "dev:web": "npm run dev -w @lawcompany/editor-playground",
+    "build:web": "npm run build -w @lawcompany/editor-playground",
+    "typecheck:web": "npm run typecheck -w @lawcompany/editor-playground",
+    "test:baseline": "node tools/editor/run-baseline.mjs",
+    "check:baseline": "node tools/editor/check-baseline.mjs",
+    "capture:longform": "node tools/editor/capture-longform.mjs"
   },
   "dependencies": {
     "ws": "^8.21.1"

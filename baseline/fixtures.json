@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "upstream": "af65e7a0e36b7536504695d9a46449da070a578c",
+  "fixtures": [
+    {
+      "id": "word-simple",
+      "format": "docx",
+      "path": "fixtures/generated/simple.docx",
+      "description": "기본 문단과 서식",
+      "bytes": 2156,
+      "sha256": "3c4c44595422ae486c85307f6cbc6bb2c1bad439577cd608dce93c32ab87b442",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "word-kitchen-sink",
+      "format": "docx",
+      "path": "fixtures/generated/kitchen-sink.docx",
+      "description": "목록·표·이미지·주석 등 복합 문서",
+      "bytes": 3415,
+      "sha256": "8b6de008b979174065aa43c58e17db5a3eb654b42eb61232c42945ecfa64dff9",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "hangul-table",
+      "format": "hwp",
+      "path": "apps/hwp/tests/fixtures/format-copy-table.hwp",
+      "description": "한글 본문·표·서식",
+      "bytes": 13312,
+      "sha256": "d90a4045fa4a1cb72fdb287580721a681ad73753519ff4eaa6b0816485b7a6df",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "hangul-memo",
+      "format": "hwp",
+      "path": "apps/hwp/tests/fixtures/memo.hwp",
+      "description": "한글 메모 보존",
+      "bytes": 13312,
+      "sha256": "c5790e0d99d8b290825e232835e88b881c27827e1e2a3301dc8d55e8afefbe2e",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "hangul-form",
+      "format": "hwpx",
+      "path": "apps/hwp/tests/fixtures/generated-form-tables.hwpx",
+      "description": "HWPX 양식·표",
+      "bytes": 11518,
+      "sha256": "b65baa3b6e1cee952e86f7d48accfb35ffb215aa9e8889e7591132878cb0cdd1",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "hangul-memo-xml",
+      "format": "hwpx",
+      "path": "apps/hwp/tests/fixtures/memo.hwpx",
+      "description": "HWPX 메모 보존",
+      "bytes": 8712,
+      "sha256": "68692a82ecf445b386753224489e1a997e8d7d7f30d9705607120f764d069531",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "hangul-header-footer",
+      "format": "hwpx",
+      "path": "apps/hwp/tests/fixtures/header-footer-paper-tables.hwpx",
+      "description": "머리말·꼬리말·표",
+      "bytes": 14805,
+      "sha256": "f3a258957ce8945858c46be064b609c85cec2a4f0725690174a879d23f0c21b3",
+      "origin": {
+        "kind": "upstream",
+        "commit": "af65e7a0e36b7536504695d9a46449da070a578c"
+      },
+      "manualChecks": [
+        "원본 프로그램에서 열기",
+        "본문·표 편집 및 undo",
+        "같은 형식 저장 후 원본 프로그램 재열기"
+      ],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "longform-formatting",
+      "format": "md",
+      "path": "baseline/longform/longform-formatting.md",
+      "description": "제목·서식·빈 문단·목록·인용문",
+      "bytes": 228,
+      "sha256": "905957f6d3c5e6c5c28833730a431fe02eb8af4d00745989f042ad8186cd49ab",
+      "origin": {
+        "kind": "synthetic-consumer-capture",
+        "repository": "sl-app-fe",
+        "commit": "384779bc269927839e2abda7d54c33842165911a",
+        "path": "apps/saas/utils/editor.ts",
+        "sha256": "83c03c06067b26f36a35430c1b4d0d45e23d9a868bfd271e7ae920b2124fb72a",
+        "scope": "HTML to Markdown, removeMarkTags, getMarkedPosition; no reverse conversion or editor mount"
+      },
+      "manualChecks": ["기존 롱폼에 로드 후 저장", "선택 범위 및 인용 표시 비교"],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "longform-selection",
+      "format": "md",
+      "path": "baseline/longform/longform-selection.md",
+      "description": "한글·emoji·다중 문단 선택 UTF-16 offset",
+      "bytes": 100,
+      "sha256": "568ff6787b5d0c1a92d3505b6684495e58913fe36499864bed999c5501567193",
+      "origin": {
+        "kind": "synthetic-consumer-capture",
+        "repository": "sl-app-fe",
+        "commit": "384779bc269927839e2abda7d54c33842165911a",
+        "path": "apps/saas/utils/editor.ts",
+        "sha256": "83c03c06067b26f36a35430c1b4d0d45e23d9a868bfd271e7ae920b2124fb72a",
+        "scope": "HTML to Markdown, removeMarkTags, getMarkedPosition; no reverse conversion or editor mount"
+      },
+      "manualChecks": ["기존 롱폼에 로드 후 저장", "선택 범위 및 인용 표시 비교"],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "longform-table-links",
+      "format": "md",
+      "path": "baseline/longform/longform-table-links.md",
+      "description": "표·링크·텍스트 참고자료 표시",
+      "bytes": 177,
+      "sha256": "e407025296ce27ddcba49f7f367179141ffb866533d280fbf6fa1f18eb42a3e2",
+      "origin": {
+        "kind": "synthetic-consumer-capture",
+        "repository": "sl-app-fe",
+        "commit": "384779bc269927839e2abda7d54c33842165911a",
+        "path": "apps/saas/utils/editor.ts",
+        "sha256": "83c03c06067b26f36a35430c1b4d0d45e23d9a868bfd271e7ae920b2124fb72a",
+        "scope": "HTML to Markdown, removeMarkTags, getMarkedPosition; no reverse conversion or editor mount"
+      },
+      "manualChecks": ["기존 롱폼에 로드 후 저장", "선택 범위 및 인용 표시 비교"],
+      "externalReopen": "pending"
+    },
+    {
+      "id": "longform-escaping",
+      "format": "md",
+      "path": "baseline/longform/longform-escaping.md",
+      "description": "역슬래시·기호·빈 줄의 현재 변환 결과",
+      "bytes": 70,
+      "sha256": "a33ca0eef9abe94ed0dd807cfda15a68abfa12f950af9ea96c41fee24bc88ca0",
+      "origin": {
+        "kind": "synthetic-consumer-capture",
+        "repository": "sl-app-fe",
+        "commit": "384779bc269927839e2abda7d54c33842165911a",
+        "path": "apps/saas/utils/editor.ts",
+        "sha256": "83c03c06067b26f36a35430c1b4d0d45e23d9a868bfd271e7ae920b2124fb72a",
+        "scope": "HTML to Markdown, removeMarkTags, getMarkedPosition; no reverse conversion or editor mount"
+      },
+      "manualChecks": ["기존 롱폼에 로드 후 저장", "선택 범위 및 인용 표시 비교"],
+      "externalReopen": "pending"
+    }
+  ]
+}
