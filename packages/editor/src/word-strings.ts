@@ -1,0 +1,25 @@
+import type { Lang } from '@genoffice/i18n'
+
+export const discardChangesText: Record<Lang, string> = {
+  ko: '저장하지 않은 변경 내용을 버리고 다른 문서를 열까요?',
+  en: 'Discard unsaved changes and open another document?',
+  zh: '放弃未保存的更改并打开其他文档？',
+  'zh-TW': '捨棄未儲存的變更並開啟其他文件？',
+  ja: '保存していない変更を破棄して別の文書を開きますか？',
+  fr: 'Abandonner les modifications non enregistrées et ouvrir un autre document ?',
+  de: 'Ungespeicherte Änderungen verwerfen und ein anderes Dokument öffnen?',
+  es: '¿Descartar los cambios sin guardar y abrir otro documento?',
+  th: 'ละทิ้งการเปลี่ยนแปลงที่ยังไม่ได้บันทึกและเปิดเอกสารอื่นหรือไม่?',
+  id: 'Buang perubahan yang belum disimpan dan buka dokumen lain?',
+  ru: 'Отменить несохранённые изменения и открыть другой документ?',
+  ar: 'هل تريد تجاهل التغييرات غير المحفوظة وفتح مستند آخر؟',
+  pt: 'Descartar as alterações não guardadas e abrir outro documento?',
+  it: 'Scartare le modifiche non salvate e aprire un altro documento?',
+  pl: 'Odrzucić niezapisane zmiany i otworzyć inny dokument?',
+  cs: 'Zahodit neuložené změny a otevřít jiný dokument?',
+  nl: 'Niet-opgeslagen wijzigingen verwerpen en een ander document openen?',
+  ms: 'Buang perubahan yang belum disimpan dan buka dokumen lain?',
+  he: 'למחוק שינויים שלא נשמרו ולפתוח מסמך אחר?',
+  hi: 'बिना सहेजे बदलाव छोड़कर दूसरा दस्तावेज़ खोलें?',
+  vi: 'Bỏ các thay đổi chưa lưu và mở tài liệu khác?',
+}

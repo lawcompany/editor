@@ -10,7 +10,9 @@
     "./word": "./src/word.ts",
     "./markdown": "./src/markdown.ts",
     "./hangul": "./src/hangul.ts",
-    "./platform": "./src/platform.ts"
+    "./platform": "./src/platform.ts",
+    "./word-browser": "./src/word-browser.ts",
+    "./word.css": "./src/word.css"
   },
   "scripts": {
     "build": "vite build",
@@ -21,7 +23,11 @@
     "@lawcompany/editor-core": "*",
     "@genoffice/docx-engine": "*",
     "@tiptap/core": "3.31.0",
-    "@tiptap/pm": "3.31.0"
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "@genoffice/i18n": "*",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "vite": "^7.3.1",

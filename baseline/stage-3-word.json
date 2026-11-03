@@ -1,0 +1,49 @@
+{
+  "upstream": "af65e7a0e36b7536504695d9a46449da070a578c",
+  "changes": [
+    {
+      "path": "apps/docs/src/renderer/file-actions.ts",
+      "sha256": "8a31be6e6cc2cb6c09123c99cf30a40cc2586b4d76f4b52da6f355514d7ff3b3",
+      "reason": "Stage 3: share browser-safe Word commands, layout, inline inheritance and save helpers; retain desktop callers."
+    }
+  ],
+  "extracted": [
+    {
+      "path": "apps/docs/src/renderer/editor/ribbon-commands.ts",
+      "symbols": [
+        "applyParagraphStyle",
+        "applyParagraphStyleId",
+        "shedMajorityDirectFormatting",
+        "applyGalleryStyle",
+        "insertTableAt"
+      ]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/table-grid.ts",
+      "symbols": [
+        "columnWidthsPx",
+        "reflowColumns",
+        "pctOf",
+        "insertColumnAt",
+        "copyCellFormatting",
+        "insertRowAt"
+      ]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/chart-save-parts.ts",
+      "symbols": ["chartSaveParts"]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/layout-settings.ts",
+      "symbols": ["applyDocLayoutSettings"]
+    },
+    {
+      "path": "apps/docs/src/renderer/editor/content.ts",
+      "symbols": ["inheritInlineFormatting"]
+    },
+    {
+      "path": "packages/editor/src/word-session.ts",
+      "symbols": ["createWordSession"]
+    }
+  ]
+}

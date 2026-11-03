@@ -13,8 +13,17 @@ for (const file of upstream.licenses) {
 for (const fixture of readJson('baseline/fixtures.json').fixtures) fixtureBytes(fixture)
 const extraction = readJson('baseline/stage-2-extraction.json')
 assert.equal(extraction.upstream, upstream.commit)
-const changes = new Map(extraction.changes.map((file) => [file.path, file]))
-assert.equal(changes.size, extraction.changes.length, 'Duplicate extraction source')
+const word = readJson('baseline/stage-3-word.json')
+assert.equal(word.upstream, upstream.commit)
+const changes = new Map()
+for (const stage of [extraction, word]) {
+  assert.equal(
+    new Set(stage.changes.map((file) => file.path)).size,
+    stage.changes.length,
+    'Duplicate stage source',
+  )
+  for (const file of stage.changes) changes.set(file.path, file)
+}
 const baselineFiles = readJson('baseline/source-manifest.json').files
 for (const file of baselineFiles) {
   const original = execFileSync('git', ['show', `${upstream.commit}:${file.path}`], {
@@ -54,7 +63,7 @@ function find(path, predicate) {
   assert.equal(matches.length, 1, `Expected one declaration in ${path}`)
   return matches[0]
 }
-for (const file of extraction.extracted) {
+for (const file of [...extraction.extracted, ...word.extracted]) {
   for (const name of file.symbols) {
     find(
       file.path,

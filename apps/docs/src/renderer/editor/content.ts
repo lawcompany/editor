@@ -1,5 +1,5 @@
 import type { Editor } from '@tiptap/core'
-import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
+import type { Node as ProseMirrorNode, Mark } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 import {
   TABLE_HEADER_FILL,
@@ -923,4 +923,32 @@ export function insertBlocksAfter(
   }
   editor.view.dispatch(tr)
   return true
+}
+
+/** Formatting expressed by the fragment must not also be inherited from the old text. */
+const FRAGMENT_MARK_TYPES = new Set(['bold', 'italic', 'underline', 'strike', 'link'])
+const REVISION_MARK_TYPES = new Set(['ins', 'del'])
+
+/** Keep surrounding run formatting when replacing an inline selection. */
+export function inheritInlineFormatting(
+  editor: Editor,
+  from: number,
+  inline: PmNode[],
+): ProseMirrorNode[] {
+  const schema = editor.schema
+  const fragmentStyled = inline.some((n) => (n.marks ?? []).length > 0)
+  const $from = editor.state.doc.resolve(from)
+  const anchor = $from.parent.childAfter($from.parentOffset).node
+  const inherited = (anchor?.marks ?? []).filter(
+    (m) =>
+      !REVISION_MARK_TYPES.has(m.type.name) &&
+      !(fragmentStyled && FRAGMENT_MARK_TYPES.has(m.type.name)),
+  )
+  const nodes = inline.map((n) => {
+    if (n.type !== 'text') return schema.nodeFromJSON(n)
+    let marks: readonly Mark[] = inherited
+    for (const m of n.marks ?? []) marks = schema.markFromJSON(m).addToSet(marks)
+    return schema.text(n.text ?? '', marks)
+  })
+  return nodes
 }

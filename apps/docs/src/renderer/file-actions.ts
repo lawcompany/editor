@@ -1,3 +1,5 @@
+import { chartSaveParts } from './editor/chart-save-parts'
+import { applyDocLayoutSettings } from './editor/layout-settings'
 /**
  * Document lifecycle: open/new (full state reset from a parsed docx), the
  * save pipeline (PM doc → save plan → docx bytes → reparse), and PDF export.
@@ -16,12 +18,7 @@ import {
   BLANK_ORDERED_NUM_ID,
   buildBlankDocx,
   paperSizeForLocale,
-  findChartWorkbookPath,
-  parseChartPartXml,
   parseDocx,
-  patchChartPartXml,
-  patchChartWorkbookXlsxBase64,
-  readDocxPartBase64,
   readPageColor,
   readSections,
   readSectionSettings,
@@ -75,7 +72,6 @@ import { docTextLength, docWeight, openTierFor } from './large-document'
 import { documentToMarkdown } from './export-markdown'
 import { blocksHaveRevisions } from './editor/revision-view'
 import { docStyleCss } from './doc-style-css'
-import { setNoteNumFmts } from './note-format'
 import type { CompareEntry } from './editor/compare'
 import { blocksToPmDoc, pmDocOptions, pmDocToSavePlan, type PmNode } from './editor/convert'
 import { TABLE_TRAILING_SKIP, setLazyMediaHashes } from './editor/extensions'
@@ -102,12 +98,7 @@ import { pruneUnreferencedNumbering } from './numbering-actions'
 import { applySectPrRewrites, type SectPrRewrite } from './sectpr-rewrite'
 import { createSaveSerializer } from './save-until-persisted'
 import { checkMissingFonts, collectDocFonts } from './font-check'
-import {
-  hangulSpaceWideningFor,
-  loadBundledStandIns,
-  setDocFontTable,
-  setHangulSpaceWidening,
-} from './line-metrics'
+import { loadBundledStandIns, setDocFontTable } from './line-metrics'
 import { adoptEmbeddedFonts } from './embedded-fonts'
 import { defaultEastAsiaFontFor } from './font-list'
 import { hasPrintableHeaderFooter } from './pagination'
@@ -351,27 +342,6 @@ export function restoreMarksAfterDocRewrite(editor: Editor, snapshot: string | n
   if (marks.length === 0) return false
   editor.view.dispatch(editor.state.tr.setStoredMarks(marks))
   return true
-}
-
-/** doc-level layout inputs living outside CSS: default tab grid + hyphenation lang */
-function applyDocLayoutSettings(editor: Editor, parsed: ParsedDocFull): void {
-  setNoteNumFmts({ footnote: parsed.footnoteProps, endnote: parsed.endnoteProps })
-  editor.storage.tabStops.defaultTabStopTwips = parsed.defaultTabStopTwips ?? null
-  editor.storage.listNumbering.defaultTabTwips = parsed.defaultTabStopTwips ?? 720
-  editor.storage.listNumbering.indentNotTabStop = parsed.indentNotNumberingTabStop === true
-  // Word 2013+ justified lines pull words up by shrinking spaces; legacy
-  // compatibility modes (and new blank docs) never do
-  editor.storage.justifyShrink.enabled = (parsed.compatibilityMode ?? 0) >= 15
-  editor.storage.cjkPunctShrink.enabled = parsed.compressPunctuation === true
-  editor.storage.cjkPunctShrink.hangPunct = parsed.compressPunctuation !== true
-  editor.storage.cjkPunctShrink.legacyLayout = (parsed.compatibilityMode ?? 0) < 15
-  editor.storage.cjkPunctShrink.docEastAsiaLang = parsed.docDefaults?.eastAsiaLang ?? null
-  setHangulSpaceWidening(hangulSpaceWideningFor(parsed))
-  // Chromium only hyphenates under an explicit lang (the app shell is zh-CN);
-  // scoped to autoHyphenation docs so CJK font fallback is untouched elsewhere
-  const lang = parsed.autoHyphenation ? parsed.docDefaults?.lang : undefined
-  if (lang) editor.view.dom.setAttribute('lang', lang)
-  else editor.view.dom.removeAttribute('lang')
 }
 
 /**
@@ -831,36 +801,7 @@ export async function buildDocBytes(
   if (!doc || !editor) return null
   const pmJson = pmOverride ?? (editor.getJSON() as PmNode)
   const plan = pmDocToSavePlan(pmJson, doc.parsed.blocks)
-  // chart data edits patch the chart's own zip part, not the body XML
-  const partXml: Record<string, string> = {}
-  const partBinary: Record<string, string> = {}
-  for (const { partPath, patch } of plan.chartPatches) {
-    const originalPart = doc.parsed.extras.chartParts[partPath]
-    if (originalPart) {
-      const patchedXml = patchChartPartXml(originalPart, patch)
-      partXml[partPath] = patchedXml
-      // Also update the embedded workbook so Word's "Edit Data" shows correct data
-      const wbPath = await findChartWorkbookPath(doc.parsed.internal.originalBytes, partPath)
-      if (wbPath) {
-        const existingBase64 = await readDocxPartBase64(doc.parsed.internal.originalBytes, wbPath)
-        if (existingBase64) {
-          const display = parseChartPartXml(patchedXml, partPath)
-          if (display) {
-            const namedSeries = display.series.map((s, i) => ({
-              name: s.name ?? `Series${i + 1}`,
-              values: s.values as (number | null)[],
-            }))
-            const updated = await patchChartWorkbookXlsxBase64(
-              existingBase64,
-              display.categories,
-              namedSeries,
-            )
-            if (updated) partBinary[wbPath] = updated
-          }
-        }
-      }
-    }
-  }
+  const { partXml, partBinary } = await chartSaveParts(doc.parsed, plan)
   // Ink must be passed whenever any annotation exists (not only when
   // dirty): a regenerated anchor paragraph loses its ink run, and the
   // engine re-injects the full layer from this list.
