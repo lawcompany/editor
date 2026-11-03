@@ -1,5 +1,6 @@
+import { inheritInlineFormatting } from '../editor/content'
 import type { Editor } from '@tiptap/core'
-import type { Mark, Node as ProseMirrorNode } from '@tiptap/pm/model'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { ChartDisplay, CommentInfo, NewChart, NoteInfo } from '@genoffice/docx-engine'
 import type { ToolDisplay } from '@genoffice/agent-core'
 import type {
@@ -829,10 +830,6 @@ function selectionRange(
   return empty ? null : { from, to }
 }
 
-/** formatting the fragment expresses itself (tags), so it must not also be inherited from the old text */
-const FRAGMENT_MARK_TYPES = new Set(['bold', 'italic', 'underline', 'strike', 'link'])
-const REVISION_MARK_TYPES = new Set(['ins', 'del'])
-
 /** Doc as last seen by the AI pipeline (context build / read / own write); a differing doc means the user edited in between. */
 const docBaseline = new WeakMap<Editor, ProseMirrorNode>()
 
@@ -1648,20 +1645,7 @@ function executeSyncTool(
       if (inline.length === 0) {
         return fail(t('aiSumReplaceSelection'), 'html did not parse into any text')
       }
-      const schema = editor.schema
-      const fragmentStyled = inline.some((n) => (n.marks ?? []).length > 0)
-      const anchor = $from.parent.childAfter($from.parentOffset).node
-      const inherited = (anchor?.marks ?? []).filter(
-        (m) =>
-          !REVISION_MARK_TYPES.has(m.type.name) &&
-          !(fragmentStyled && FRAGMENT_MARK_TYPES.has(m.type.name)),
-      )
-      const nodes = inline.map((n) => {
-        if (n.type !== 'text') return schema.nodeFromJSON(n)
-        let marks: readonly Mark[] = inherited
-        for (const m of n.marks ?? []) marks = schema.markFromJSON(m).addToSet(marks)
-        return schema.text(n.text ?? '', marks)
-      })
+      const nodes = inheritInlineFormatting(editor, range.from, inline)
       const blockIndex = $from.index(0)
       // the echo quotes what was replaced back to the model, so a selection
       // covering a withheld span would undo the withholding right here

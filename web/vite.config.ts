@@ -10,6 +10,12 @@ export default defineConfig({
   server: { host: '127.0.0.1', port: 5190, strictPort: true },
   build: {
     manifest: true,
-    rollupOptions: { input: { main: resolve('index.html'), stage2: resolve('stage2.html') } },
+    rollupOptions: {
+      input: {
+        main: resolve('index.html'),
+        stage2: resolve('stage2.html'),
+        word: resolve('word.html'),
+      },
+    },
   },
 })

@@ -22,3 +22,10 @@ No document engine, document format identifier, Electron bridge or embedded AI i
 - Add browser engine round trips, original-versus-extracted HWP byte comparisons, extraction tests, an explicit extraction manifest and CI checks. Keep the immutable stage-1 source hashes.
 
 The public React `OfficeEditor`, full Word/Hangul UI and external Word/Hancom compatibility checks remain in later stages. See `docs/stage-2-extraction.md` for validation and limits.
+
+2026-11-03 — Stage 3 of `@lawcompany/editor`:
+
+- Connect the existing Word renderer, document styles, formatting/list/table commands and revision history to a browser host and `/word.html`. Keep the package private; the stable `OfficeEditor` API remains stage 5.
+- Share ribbon commands, table grid helpers, inline formatting inheritance, layout settings and chart save parts with desktop callers. Preserve the original DOCX baseline, narrow XML/ZIP patching and document identifiers.
+- Add atomic loading, dirty state, failed-write retention, browser downloads, protected-document read-only mode, expired selection checks and guarded external edits.
+- Verify DOCX browser editing/download/reopening, original parts, longform limitations and desktop regressions. Actual Microsoft Word reopening remains unverified because Word is not installed. See `docs/stage-3-word-web.md`.

@@ -44,6 +44,7 @@ function App() {
       <header>
         <span className="eyebrow">LAWCOMPANY · EDITOR LAB</span>
         <span className="badge">1단계 / 개발 기준선</span>
+        <a href="./word.html">Word (.docx)</a>
       </header>
       <section className="intro">
         <h1>웹 편집기의 시작점</h1>

@@ -4,7 +4,11 @@ import { webBoundary } from '../../tools/editor/web-boundary.mjs'
 export default defineConfig({
   plugins: [webBoundary('stage 2 editor modules')],
   build: {
-    lib: { entry: 'src/index.ts', formats: ['es'], fileName: 'index' },
+    lib: {
+      entry: { index: 'src/index.ts', 'word-browser': 'src/word-browser.ts' },
+      formats: ['es'],
+      fileName: (_format, name) => `${name}.js`,
+    },
     minify: false,
   },
 })

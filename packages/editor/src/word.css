@@ -1,0 +1,120 @@
+@import '@genoffice/ui/tokens.css';
+@import '../../../apps/docs/src/renderer/styles.css';
+@import '../../../apps/docs/src/renderer/fonts/fonts.css';
+
+.word-browser {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  color: var(--text);
+  background: var(--surface);
+}
+.word-filebar,
+.word-ribbon {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.word-filebar strong {
+  margin-right: auto;
+}
+.word-filebar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.word-ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding-right: 10px;
+  margin-right: 4px;
+  border-right: 1px solid var(--border);
+}
+.word-browser button,
+.word-browser select,
+.word-ribbon input {
+  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  min-height: 30px;
+  padding: 4px 8px;
+}
+.word-ribbon button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+}
+.word-ribbon button svg {
+  width: 18px;
+  height: 18px;
+}
+.word-ribbon input[type='number'] {
+  width: 50px;
+}
+.word-ribbon select {
+  max-width: 155px;
+}
+.word-browser button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.word-browser button[aria-pressed='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.word-browser button:not(:disabled):hover {
+  background: var(--hover);
+}
+.word-browser :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.word-status {
+  padding: 5px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+.word-error {
+  padding: 10px 16px;
+  color: var(--danger);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.word-workspace {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  display: block;
+  padding: 28px;
+  background: var(--canvas);
+}
+.word-workspace .page-wrap {
+  width: var(--page-w, 816px);
+  margin: 0 auto;
+  background: var(--docs-paper);
+  color: var(--docs-paper-ink);
+  box-shadow: var(--docs-page-shadow);
+}
+.word-workspace .doc-page {
+  box-sizing: border-box;
+  width: var(--page-w, 816px);
+  min-height: var(--page-h, 1056px);
+  padding: var(--page-pad-top, 72px) var(--page-pad-right, 72px) var(--page-pad-bottom, 72px)
+    var(--page-pad-left, 72px);
+  outline: none;
+}
+
+/* The desktop LaTeX dialog is not part of the browser host. */
+.word-browser .doc-formula-edit {
+  display: none;
+}
