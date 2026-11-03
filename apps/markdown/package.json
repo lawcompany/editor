@@ -69,6 +69,7 @@
     "mermaid": "^11.17.2",
     "wavedrom": "^3.7.0",
     "pdfjs-dist": "^6.2.108",
-    "@genoffice/agent-core": "*"
+    "@genoffice/agent-core": "*",
+    "@lawcompany/editor-core": "*"
   }
 }

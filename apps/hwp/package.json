@@ -23,7 +23,6 @@
     "@genoffice/i18n": "*",
     "@genoffice/project-store": "*",
     "@genoffice/ui": "*",
-    "@noble/hashes": "^2.2.0",
     "@rhwp/core": "file:../../vendor/rhwp-core",
     "@rhwp/editor": "0.8.7",
     "@types/react": "^19.2.14",
@@ -41,5 +40,11 @@
     "vite": "^7.3.1",
     "vitest": "^4.1.11"
   },
-  "author": "GenOffice"
+  "author": "GenOffice",
+  "dependencies": {
+    "buffer": "6.0.3",
+    "pako": "1.0.11",
+    "crc-32": "1.2.2",
+    "@noble/hashes": "^2.2.0"
+  }
 }

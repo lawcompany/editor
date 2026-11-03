@@ -10,7 +10,7 @@
 - [확인한 소스와 미검증 항목](./docs/source-audit.md)
 - [초기 장기 설계 보관본](./docs/editor-architecture-v1.md) · [초기 계약 보관본](./docs/editor-contracts-v1.md)
 
-**1단계의 로컬 fork·회귀 기준선·웹 playground를 구현했다.** Word·한글 웹 편집과 공개 `OfficeEditor` 패키지는 이후 단계에서 구현한다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
+**1·2단계의 회귀 기준선·웹 playground·편집기 기능 분리를 구현했다.** 새 웹 모듈은 Electron·내장 AI 없이 실행하며, 기존 데스크톱 소스는 회귀 비교용으로 보존한다. Word·한글 편집 화면과 공개 React `OfficeEditor`는 이후 단계에서 구현한다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
 
 ## 실행
 
@@ -22,17 +22,19 @@ npm ci --ignore-scripts
 npm run dev:web
 ```
 
-<http://127.0.0.1:5190>에서 회귀 문서 11개를 읽고 해시를 확인하거나 다운로드할 수 있다. 로컬 파일은 브라우저 메모리에서만 읽는다. playground에는 편집·저장 엔진이 아직 연결되지 않았다.
+<http://127.0.0.1:5190>에서 회귀 문서 11개를 읽고 해시를 확인하거나 다운로드할 수 있다. 로컬 파일은 브라우저 메모리에서만 읽는다. `/stage2.html`은 DOCX·HWP·HWPX의 실제 엔진 편집·저장·재열기와 추출 모듈을 검사하는 개발용 페이지다. 리본·studio 편집 화면은 아직 연결하지 않았다.
 
 ```sh
 npm run check:baseline
 npm run test:baseline
-npm run build:web
+npm run check:hangul-parity
+npm run check:editor
 ```
 
-`--ignore-scripts`는 upstream의 Electron 설치와 native postinstall을 실행하지 않기 위한 1단계 개발 설치 방식이다. 데스크톱 앱 실행용 설치와 다르다. 원본의 `npm run dev`, `npm run build`, `npm test`는 전체 데스크톱 프로젝트 명령으로 남겨 두었다.
+`--ignore-scripts`는 upstream의 Electron 설치와 native postinstall을 실행하지 않는 웹 개발 설치 방식이다. 원본 workspace의 의존성 목록은 보존하되 웹 build의 전이 의존은 별도로 검사한다. 데스크톱 앱 실행용 설치와 다르다. 원본의 `npm run dev`, `npm run build`, `npm test`는 전체 데스크톱 프로젝트 명령으로 남겨 두었다.
 
 - [1단계 결과·검증·남은 범위](./docs/stage-1-baseline.md)
+- [2단계 추출 모듈·검증·남은 범위](./docs/stage-2-extraction.md)
 - [소스 의존 관계와 열기·편집·저장 흐름](./docs/upstream-map.md)
 - [고정 소스와 라이선스](./baseline/upstream.json) · [회귀 문서](./baseline/fixtures.json) · [선정 테스트](./baseline/test-plan.json)
 

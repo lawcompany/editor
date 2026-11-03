@@ -1,3 +1,4 @@
+import { placeholderInstruction } from '../src/renderer/ai/redact-instruction'
 import { describe, afterEach, beforeEach, expect, it } from 'vitest'
 import { Editor } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
@@ -8,7 +9,6 @@ import {
   checkPlaceholders,
   redactJson,
   collectPlaceholders,
-  placeholderInstruction,
   placeholderSource,
   sanitizeLabel,
 } from '../src/renderer/editor/redact'

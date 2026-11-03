@@ -52,7 +52,12 @@
     "typecheck:web": "npm run typecheck -w @lawcompany/editor-playground",
     "test:baseline": "node tools/editor/run-baseline.mjs",
     "check:baseline": "node tools/editor/check-baseline.mjs",
-    "capture:longform": "node tools/editor/capture-longform.mjs"
+    "capture:longform": "node tools/editor/capture-longform.mjs",
+    "build:editor": "npm run build -w @lawcompany/editor",
+    "test:editor": "npm run test -w @lawcompany/editor",
+    "typecheck:editor": "npm run typecheck -w @lawcompany/editor",
+    "check:editor": "npm run check:baseline && npm run typecheck:editor && npm run test:editor && npm run build:editor && npm run build:web",
+    "check:hangul-parity": "node tools/editor/check-hangul-parity.mjs"
   },
   "dependencies": {
     "ws": "^8.21.1"
@@ -74,6 +79,7 @@
     "playwright-core": "^1.61.1",
     "pngjs": "^7.0.0",
     "prettier": "^3.9.6",
-    "typescript-eslint": "^8.65.0"
+    "typescript-eslint": "^8.65.0",
+    "esbuild": "0.25.12"
   }
 }

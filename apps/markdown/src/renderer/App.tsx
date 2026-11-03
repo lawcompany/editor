@@ -1,3 +1,4 @@
+import { captureSnapshot, restoreSnapshot } from './editor/history'
 import {
   captureMarkdownSource,
   roundTripMarkdownEnabled,
@@ -1312,10 +1313,11 @@ export default function App() {
     // snapshots carry body + the raw frontmatter block (structured, no
     // file-text round-trip) so a rollback also reverts set_frontmatter and
     // an untouched block restores byte-for-byte
-    getSnapshot: () => ({
-      body: editorRef.current ? bodyMarkdown(editorRef.current) : '',
-      frontmatter: envelopeRef.current.frontmatter,
-    }),
+    getSnapshot: () => {
+      const current = editorRef.current
+      if (!current) throw new Error('The editor is not ready')
+      return captureSnapshot(current, envelopeRef.current.frontmatter, sourceMapRef.current)
+    },
     restoreSnapshot: (snapshot) => {
       const current = editorRef.current
       if (!current) return
@@ -1323,8 +1325,8 @@ export default function App() {
       const inner = frontmatterInner(snapshot.frontmatter)
       setFmText(inner)
       setFmOpen(inner !== '')
-      current.commands.setContent(snapshot.body, { contentType: 'markdown' })
-      sourceMapRef.current = buildSourceMap(current, current.state.doc, snapshot.body)
+      const restored = restoreSnapshot(current, snapshot)
+      sourceMapRef.current = restored.sourceMap
       markDirty()
     },
     onRunDone: (mutated) => {

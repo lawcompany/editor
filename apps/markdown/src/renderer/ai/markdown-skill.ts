@@ -1,8 +1,9 @@
+import { placeholderInstruction } from './redact-instruction'
 import type { AgentSkill } from '@genoffice/agent-core'
 import { brandText } from '@genoffice/i18n'
 import type { Editor } from '@tiptap/core'
 import type { AiDocWriter } from './doc-writer'
-import { redactLabelsOf, placeholderInstruction } from '../editor/redact'
+import { redactLabelsOf } from '../editor/redact'
 import {
   AGENT_TOOLS,
   buildDocContext,

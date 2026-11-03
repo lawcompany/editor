@@ -28,6 +28,7 @@ export default defineConfig({
     plugins: [
       externalizeDepsPlugin({
         exclude: [
+          '@lawcompany/editor-core',
           '@genoffice/docx-engine',
           '@genoffice/electron-utils',
           '@genoffice/font-metrics',

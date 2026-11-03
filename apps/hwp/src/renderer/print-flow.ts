@@ -1,4 +1,4 @@
-import type { AgentBridge } from './ai/agent-bridge'
+import type { AgentBridge } from './agent-bridge'
 import type { PrintJob, PrintMode, PrintPage } from '../shared/ipc'
 
 /**

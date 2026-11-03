@@ -54,3 +54,7 @@ _scratch-*
 /artifacts/
 /.playwright-cli/
 /output/playwright/
+
+# Stage 2 browser modules and verification assets
+packages/editor/dist/
+web/public/editor-assets/

@@ -1,3 +1,4 @@
+import { clearChangeIndicators, acceptChanges as acceptDocumentChanges } from '../editor/changes'
 import {
   aiPanelWidthAtPointer,
   AiBlockedNotice,
@@ -102,7 +103,6 @@ import {
   type DocsEditQueueItem,
 } from './edit-queue'
 import { setInactiveSelectionShown } from '../editor/inactive-selection'
-import { applyRevisionsBy } from '../editor/revisions'
 import { DOCS_CONTINUE_INSTRUCTION } from './continuation'
 import { waitForFullContent } from '../phased-content'
 import { currentDocGeneration } from '../file-actions'
@@ -861,22 +861,9 @@ export function AiPanel({
 
   /** drop every aiChanged flag; silent = skip undo history (auto-accept path) */
   const clearAiHighlights = (silent = false) => {
-    const view = editorRef.current.view
-    let tr = view.state.tr
-    let touched = false
-    view.state.doc.forEach((node, offset) => {
-      if (node.attrs.aiChanged) {
-        tr = tr.setNodeMarkup(offset, undefined, { ...node.attrs, aiChanged: false })
-        touched = true
-      }
-    })
-    if (silent) tr = tr.setMeta('addToHistory', false)
-    if (touched) {
-      view.dispatch(tr)
-      // AI-pipeline housekeeping, not a user edit: keep the freshness baseline current
-      markDocSeen(editorRef.current)
-    }
+    if (clearChangeIndicators(editorRef.current, silent)) markDocSeen(editorRef.current)
   }
+
   /** instruction of the in-flight run */
   const instructionRef = useRef('')
   /** document state before the run's first edit — attached to the turn's final
@@ -1756,8 +1743,7 @@ export function AiPanel({
     setAttachments((prev) => prev.filter((a) => a.path !== path))
 
   const acceptChanges = () => {
-    applyRevisionsBy(editorRef.current, AI_REVISION_AUTHOR, 'accept')
-    clearAiHighlights()
+    if (acceptDocumentChanges(editorRef.current, AI_REVISION_AUTHOR)) markDocSeen(editorRef.current)
   }
 
   const toggleTrackChanges = () => {

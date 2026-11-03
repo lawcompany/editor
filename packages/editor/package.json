@@ -1,0 +1,32 @@
+{
+  "name": "@lawcompany/editor",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Internal browser editing modules; React component ships in stage 5",
+  "exports": {
+    ".": "./src/index.ts",
+    "./word": "./src/word.ts",
+    "./markdown": "./src/markdown.ts",
+    "./hangul": "./src/hangul.ts",
+    "./platform": "./src/platform.ts"
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@lawcompany/editor-core": "*",
+    "@genoffice/docx-engine": "*",
+    "@tiptap/core": "3.31.0",
+    "@tiptap/pm": "3.31.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "vitest": "^4.1.12",
+    "typescript": "^5.9.3",
+    "jsdom": "^28.0.0"
+  }
+}
