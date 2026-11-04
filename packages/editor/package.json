@@ -1,10 +1,10 @@
 {
   "name": "@lawcompany/editor",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "Internal browser editing modules; React component ships in stage 5",
+  "description": "React Word, Hangul and longform editor with isolated browser runtimes",
   "exports": {
     ".": "./src/index.ts",
     "./word": "./src/word.ts",
@@ -14,10 +14,12 @@
     "./word-browser": "./src/word-browser.ts",
     "./word.css": "./src/word.css",
     "./hangul-browser": "./src/hangul-browser.ts",
-    "./hangul.css": "./src/hangul.css"
+    "./hangul.css": "./src/hangul.css",
+    "./internal": "./src/internal.ts",
+    "./styles.css": "./src/office.css"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.runtime.config.ts && node ../../tools/editor/package-editor.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "prebuild": "node ../../tools/editor/prepare-hangul-assets.mjs"

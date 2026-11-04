@@ -35,8 +35,16 @@ export function HangulEditor({
   lang = 'ko',
   onReady,
   write = downloadHangul,
+  onStatus,
+  onError,
+  managed = false,
+  portalTarget,
 }: {
   assetBase: string
+  onStatus?: (status: HangulStatus) => void
+  onError?: (error: unknown) => void
+  managed?: boolean
+  portalTarget?: HTMLElement
   lang?: Lang
   onReady?: (session: HangulSession) => void
   write?: (bytes: Uint8Array, name: string) => Promise<void>
@@ -44,8 +52,9 @@ export function HangulEditor({
   const host = useRef<HTMLDivElement>(null)
   const file = useRef<HTMLInputElement>(null)
   const session = useRef<HangulSession | null>(null)
-  const callbacks = useRef({ onReady, write })
-  callbacks.current = { onReady, write }
+  const memoBridge = useRef<HangulSession['agent'] | null>(null)
+  const callbacks = useRef({ onReady, write, onStatus, onError })
+  callbacks.current = { onReady, write, onStatus, onError }
   const [status, setStatus] = useState<HangulStatus | null>(null)
   const [error, setError] = useState('')
   const [memoOpen, setMemoOpen] = useState(false)
@@ -60,7 +69,10 @@ export function HangulEditor({
   useEffect(() => {
     let disposed = false
     const report = (cause: unknown) => {
-      if (!disposed) setError(cause instanceof Error ? cause.message : String(cause))
+      if (!disposed) {
+        setError(cause instanceof Error ? cause.message : String(cause))
+        callbacks.current.onError?.(cause)
+      }
     }
     const save = async () => {
       await next.saveTo((bytes, name) => callbacks.current.write(bytes, name))
@@ -86,7 +98,10 @@ export function HangulEditor({
       host: host.current!,
       assetBase,
       lang,
-      onChange: setStatus,
+      onChange: (value) => {
+        setStatus(value)
+        callbacks.current.onStatus?.(value)
+      },
       onError: report,
       onMemoInsert: () => {
         setMemoOpen(true)
@@ -95,12 +110,17 @@ export function HangulEditor({
       fileCommands: { save, saveAs: save, print, pdf: print, preview: print },
     })
     session.current = next
+    memoBridge.current = {
+      ...next.agent,
+      setMemoLock: (locked) => next.agent.setMemoLock(locked || next.getStatus().readOnly),
+    }
     callbacks.current.onReady?.(next)
     const leave = (event: BeforeUnloadEvent) => {
       if (!next.getStatus().dirty && !next.getStatus().memoEditing) return
       event.preventDefault()
       event.returnValue = ''
     }
+    const keyTarget = host.current!.parentElement!
     const key = (event: KeyboardEvent) => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey || event.isComposing) return
       if (event.key.toLowerCase() === 's') {
@@ -112,12 +132,12 @@ export function HangulEditor({
         void print().catch(report)
       }
     }
-    window.addEventListener('beforeunload', leave)
-    window.addEventListener('keydown', key)
+    if (!managed) window.addEventListener('beforeunload', leave)
+    if (!managed) keyTarget.addEventListener('keydown', key)
     return () => {
       disposed = true
       window.removeEventListener('beforeunload', leave)
-      window.removeEventListener('keydown', key)
+      keyTarget.removeEventListener('keydown', key)
       next.dispose()
       session.current = null
     }
@@ -150,7 +170,7 @@ export function HangulEditor({
   }
   return (
     <div
-      className="lc-hangul"
+      className={`lc-hangul${managed ? ' lc-hangul-managed' : ''}`}
       data-phase={status?.phase ?? 'empty'}
       data-dirty={status?.dirty ?? false}
     >
@@ -228,11 +248,16 @@ export function HangulEditor({
       <div className="lc-hangul-body">
         <div ref={host} className="lc-hangul-host" />
         {status?.name && session.current && (
-          <div className="lc-hangul-memos" hidden={!memoOpen} inert={status.phase !== 'ready'}>
+          <div
+            className="lc-hangul-memos"
+            hidden={!memoOpen}
+            inert={status.phase !== 'ready' || status.readOnly}
+          >
             <MemoPanelView
               key={status.documentId}
               open={memoOpen}
-              bridge={session.current.agent}
+              bridge={memoBridge.current!}
+              portalTarget={portalTarget}
               changeTick={status.revision}
               insertTick={insertTick}
               onCollapse={() => setMemoOpen(false)}

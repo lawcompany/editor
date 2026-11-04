@@ -1,4 +1,4 @@
-import { word, markdown, hangul, platform } from '@lawcompany/editor'
+import { word, markdown, hangul, platform } from '@lawcompany/editor/internal'
 import init, { HwpDocument } from '@rhwp/core'
 import { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'

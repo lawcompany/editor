@@ -59,3 +59,11 @@ _scratch-*
 packages/editor/dist/
 packages/editor/assets/
 web/public/editor-assets/
+
+# Stage 5 generated package notices and consumer assets
+/packages/editor/LICENSE
+/packages/editor/NOTICE
+/packages/editor/LICENSE-UNICODE.txt
+/packages/editor/THIRD-PARTY-NOTICES.txt
+/examples/*/public/editor-assets/
+/examples/*/.next/

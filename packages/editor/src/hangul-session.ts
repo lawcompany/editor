@@ -37,6 +37,7 @@ export interface HangulStatus {
   name: string
   format: HangulFormat
   dirty: boolean
+  readOnly: boolean
   memoEditing: boolean
   revision: number
   documentId: number
@@ -82,6 +83,7 @@ export function createHangulSession(options: HangulSessionOptions) {
     name: '',
     format: 'hwp',
     dirty: false,
+    readOnly: false,
     memoEditing: false,
     revision: 0,
     documentId: 0,
@@ -97,6 +99,7 @@ export function createHangulSession(options: HangulSessionOptions) {
   let tracked = false
   let disposed = false
   let busy = false
+  let acknowledging = false
   const agent = createAgentBridge(() => current)
   const emit = (patch: Partial<HangulStatus>) => {
     if (disposed) return
@@ -197,6 +200,7 @@ export function createHangulSession(options: HangulSessionOptions) {
         print: t('filePrint'),
       })
       await nextAgent.showMemoAnchors(true)
+      if (status.readOnly) await nextAgent.setMemoLock(true)
       assertActive()
       cleanup()
       current?.destroy()
@@ -213,7 +217,7 @@ export function createHangulSession(options: HangulSessionOptions) {
         dirtyEvents += 1
         emit({
           dirty: (event as CustomEvent<unknown>).detail === true,
-          revision: status.revision + 1,
+          revision: status.revision + (acknowledging ? 0 : 1),
         })
       }
       const insertMemo = () => options.onMemoInsert?.()
@@ -274,7 +278,7 @@ export function createHangulSession(options: HangulSessionOptions) {
       emit({ ...before, error: detail(error) })
       fail(error)
     } finally {
-      if (previous && current === previous) await agent.setMemoLock(false).catch(() => {})
+      if (previous && current === previous) await agent.setMemoLock(status.readOnly).catch(() => {})
       busy = false
     }
   }
@@ -312,7 +316,12 @@ export function createHangulSession(options: HangulSessionOptions) {
         notifySaved: async () => {
           assertActive()
           if (markSaved) {
-            await editor.notifySaved(name)
+            acknowledging = true
+            try {
+              await editor.notifySaved(name)
+            } finally {
+              acknowledging = false
+            }
             emit({ dirty: false })
           }
         },
@@ -377,7 +386,7 @@ export function createHangulSession(options: HangulSessionOptions) {
     } catch (error) {
       return fail(error)
     } finally {
-      await agent.setMemoLock(false).catch(() => {})
+      await agent.setMemoLock(status.readOnly).catch(() => {})
       busy = false
       emit({ phase: current ? 'ready' : 'empty' })
     }
@@ -417,7 +426,7 @@ export function createHangulSession(options: HangulSessionOptions) {
     } catch (error) {
       return fail(error)
     } finally {
-      await agent.setMemoLock(false).catch(() => {})
+      await agent.setMemoLock(status.readOnly).catch(() => {})
       busy = false
       emit({ phase: 'ready' })
     }
@@ -430,6 +439,28 @@ export function createHangulSession(options: HangulSessionOptions) {
     printPages,
     get editor() {
       return current
+    },
+    async markSaved(revision: number) {
+      assertActive()
+      if (!current || busy || status.memoEditing) throw new Error('NOT_READY')
+      if (revision !== status.revision) throw new Error('STALE_REVISION')
+      await agent.setMemoLock(true)
+      try {
+        if (revision !== status.revision) throw new Error('STALE_REVISION')
+        acknowledging = true
+        await current.notifySaved(status.name)
+        assertActive()
+        emit({ dirty: false })
+      } finally {
+        acknowledging = false
+        if (!disposed) await agent.setMemoLock(status.readOnly)
+      }
+    },
+    async setReadOnly(readOnly: boolean) {
+      assertActive()
+      if (busy || status.memoEditing) throw new Error('NOT_READY: editor is busy')
+      if (current) await agent.setMemoLock(readOnly || status.memoEditing)
+      emit({ readOnly })
     },
     setMemoModalOpen: (memoEditing: boolean) => emit({ memoEditing }),
     getStatus: (): HangulStatus => ({ ...status, warnings: [...status.warnings] }),

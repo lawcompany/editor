@@ -36,3 +36,11 @@ The public React `OfficeEditor`, full Word/Hangul UI and external Word/Hancom co
 - Reuse the desktop save flow, tab/field/tail corrections and memo preservation checks. Share the memo panel through host/locale injection, retaining desktop adapters.
 - Package same-origin studio/WASM/plugin/font/dictionary assets with licenses, hashes and a separate dependency audit. Keep engine bytes and document identifiers unchanged.
 - Validate browser input, undo/redo, body/table edits, HWP/HWPX save/reopen and memo preservation. Actual Hancom reopening remains unverified; see `docs/stage-4-hangul-web.md`.
+
+2026-11-04 — Stage 5 of `@lawcompany/editor`:
+
+- Add the public React `OfficeEditor`, three presets and engine-independent Promise/Result types for file IO, outward reading, selection edits, acceptance, guarded rollback, history and saved-revision acknowledgement.
+- Isolate Word's existing global font/locale/style state in one same-origin runtime frame per instance. Keep Hangul's SDK bridge and isolate its React chrome and memo portals in a shadow root.
+- Build versioned ESM/types/CSS/runtime assets and a 0.1.0 tarball with hashes and dependency/font notices. Keep internal workspace subpaths out of the published manifest.
+- Add independent React/Vite and Next production consumers that install the tarball. Verify simultaneous Word instances, HWP/HWPX round trips, read-only, selection edits, remount and SSR/hydration.
+- Preserve document engines, format identifiers and desktop source. External Word/Hancom reopening and the SuperLawyer longform integration remain unverified/future work. See `docs/stage-5-react-library.md`.

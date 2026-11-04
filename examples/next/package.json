@@ -1,0 +1,25 @@
+{
+  "name": "office-editor-next-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build --webpack",
+    "dev": "next dev --port 5193",
+    "start": "next start --hostname 127.0.0.1 --port 5193"
+  },
+  "dependencies": {
+    "@lawcompany/editor": "file:../../artifacts/editor/lawcompany-editor-0.1.0.tgz",
+    "next": "16.4.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.15",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

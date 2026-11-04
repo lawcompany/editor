@@ -10,7 +10,7 @@
 - [확인한 소스와 미검증 항목](./docs/source-audit.md)
 - [초기 장기 설계 보관본](./docs/editor-architecture-v1.md) · [초기 계약 보관본](./docs/editor-contracts-v1.md)
 
-**1·2단계의 회귀 기준선·편집기 기능 분리와 3·4단계 Word·한글 웹 편집기를 구현했다.** 새 웹 모듈은 Electron·내장 AI 없이 실행하며, 기존 데스크톱 소스는 회귀 비교용으로 보존한다. Word와 한글의 브라우저 편집·원래 형식 저장은 검증했고 실제 Microsoft Word·한컴 한글 재열기는 미확인이다. 공개 React `OfficeEditor`는 5단계에서 구현한다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
+**1·2단계의 회귀 기준선·편집기 기능 분리와 3·4단계 Word·한글 웹 편집기를 구현했다.** 새 웹 모듈은 Electron·내장 AI 없이 실행하며, 기존 데스크톱 소스는 회귀 비교용으로 보존한다. Word와 한글의 브라우저 편집·원래 형식 저장은 검증했고 실제 Microsoft Word·한컴 한글 재열기는 미확인이다. [5단계 React `OfficeEditor`](./docs/stage-5-react-library.md)와 0.1.0 tarball·React/Next 소비 예제도 구현했다. 보관본의 일정·의미 추출·새 저장 schema·LLM 평가 조건은 현재 개발의 선행 조건이 아니다.
 
 ## 실행
 
