@@ -1,182 +1,84 @@
-# 에디터 MVP 최소 API
+# 에디터 공개 API
 
-상태: 단계별 구현을 위한 설계 초안, 구현 전
+상태: **5단계 구현**, `@lawcompany/editor` 0.1.0. 선언 원본은 `packages/editor/src/public.ts`, 구현·검증 기록은 [5단계 결과](./stage-5-react-library.md)다.
 
-[현재 실행 계획](./editor-architecture.md)을 위한 최소 계약이다. [기존 직렬화기·선택·변경·복원 코드](./ai-extraction-map.md)는 이번에 추출해 재사용한다. 기존의 [상세 계약안](./editor-contracts-v1.md)은 후속 검토용이며, 이번에 SemanticDocument·새 저장 schema·범용 proposal engine을 구현하지 않는다.
-
-## 1. 공개 surface
-
-한 패키지 `@lawcompany/editor`에 `OfficeEditor`를 제공한다. `longform`과 `word`는 Word renderer 재사용을 우선하고, `hangul`은 기존 rhwp studio를 쓴다. 실제 롱폼 호환 검증 결과에 따라 adapter를 보강한다. 형식별 지원 기능 차이를 숨기지 않는다.
+## React 진입점
 
 ```tsx
-import { OfficeEditor } from '@lawcompany/editor'
+import { OfficeEditor, type OfficeEditorHandle } from '@lawcompany/editor'
+import '@lawcompany/editor/styles.css'
 
 ;<OfficeEditor
-  preset="longform"
-  assetBaseUrl="/office-editor-assets/0.1.0/"
+  ref={editorRef}
+  preset="word"
+  assetBaseUrl="/editor-assets/0.1.0/"
+  readOnly={false}
+  lang="ko"
   onReady={handleReady}
   onChange={handleChange}
   onError={handleError}
+  style={{ height: 720 }}
 />
 ```
 
-위 코드는 제안 API다. 새 디자인 시스템·복잡한 slot API는 만들지 않는다. 앱의 기존 toolbar/AI sidebar에서 ref command를 호출하고, 기존 편집 toolbar를 재사용한다. Word는 React mount를 우선하고 HWP는 기존 embed를 유지한다. 별도 frame을 쓰는 경로의 선택은 bridge event로 전달하며, 부모 창의 DOM Selection으로 frame 내부 선택을 읽지 않는다.
+`word`는 DOCX, `hangul`은 HWP/HWPX, `longform`은 제한 HTML 가져오기·편집기 HTML 내보내기다. preset·언어·자산 경로가 바뀌면 새 인스턴스가 된다. 문서 보존이 필요하면 먼저 export한다. React 19를 peer로 사용하고 실제 소비 검증은 React 19.2.4에서 했다.
 
-`assetBaseUrl`의 정적 자산과 JS wrapper는 같은 release manifest를 사용한다. registry 준비가 지연되면 versioned tarball과 자산 복사 스크립트로 소비 검증한다. `latest` URL이나 upstream 데스크톱 실행 파일을 의존성으로 쓰지 않는다.
+## 결과·문서 식별
 
-## 2. 공통 명령과 생명주기
+모든 ref 명령은 `Promise<Result<T>>`를 반환한다. 성공은 `{ ok: true, value }`, 실패는 `{ ok: false, error: { code, message } }`다. 실패 코드는 `NOT_READY`, `READ_ONLY`, `UNSUPPORTED`, `INVALID_INPUT`, `OPEN_FAILED`, `EXPORT_FAILED`, `STALE_REVISION`, `SELECTION_EXPIRED`, `CANCELLED`다. `onError`에도 공개 명령의 실패를 전달한다.
+
+`DocumentStamp`는 `{ documentKey, sessionId, revision }`이다. 앱이 documentKey를 정하고 runtime이 나머지를 정한다. revision은 세션 안의 opaque 문자열로, undo로 과거 내용을 되살려도 과거 값을 재사용하지 않는다. 선택·focus만 옮기면 변경 이벤트를 내지 않는다.
+
+`onChange`는 stamp와 `{ origin: 'user' | 'external' | 'undo' | 'redo', dirty }`만 전달한다. 로드·export·선택 이동을 자동 저장 신호로 쓰지 않는다. `onReady` 전에 ref를 부르면 `NOT_READY`, 끝난 인스턴스의 대기 요청은 취소된다. 동시에 진행 중인 명령이 있으면 새 명령을 거절하며 소비 앱에서 순서대로 await한다.
+
+## 파일과 롱폼 저장
+
+| 명령               | 입력·출력과 지원                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| `openFile(input)`  | `{ documentKey, format, fileName, bytes: Uint8Array }` → status. word는 docx, hangul은 hwp/hwpx |
+| `exportFile()`     | stamp + `{ format, fileName, bytes }`. 원래 파일 형식만 출력                                    |
+| `loadHtml(input)`  | longform의 `{ documentKey, html }` → status. 기존 제한 HTML parser 사용                         |
+| `exportHtml()`     | longform의 stamp + `{ html }`. 원문 편집기 HTML이며 가린 외부 뷰가 아님                         |
+| `markSaved(stamp)` | export한 결과를 소비 앱이 저장한 뒤 호출. 다른 문서/세션/revision이면 거절                      |
+
+초기 로드는 변경 이벤트를 내지 않는다. 열기 실패는 이전 문서를 유지한다. export만으로 저장 완료·dirty 해제를 표시하지 않는다. 예제의 다운로드 완료 표시는 브라우저 전달을 뜻하며 디스크 기록 성공을 보증하지 않는다. 문서 엔진과 원본 package parts, 가리기 메타데이터를 유지하고 파일 저장에 외부 전달용 HTML을 사용하지 않는다.
+
+## 읽기·선택·수정
+
+| 명령                            | 계약                                                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getDocumentContext()`          | stamp + format/content/truncated/blocks. Word는 기존 제한 HTML과 블록 preview(60자), 전체 8,000자 제한. 한글은 기존 text 읽기(8,000자)이고 blocks는 비어 있음 |
+| `readBlocks({ start, end })`    | Word/longform의 현재 revision 최상위 블록 인덱스, 양끝 포함. 제한 없는 restricted-html. 한글은 UNSUPPORTED                                                    |
+| `getSelectionContent()`         | stamp + format/content/truncated/selectionToken. 선택이 없거나 안전하게 나타낼 수 없는 범위는 실패                                                            |
+| `applyResult(input)`            | stamp + selectionToken + format/content + 선택적 trackChanges. 새 stamp와 changeToken 반환                                                                    |
+| `acceptExternalChanges(token)`  | 해당 외부 변경을 수락. Word는 고유 작성자의 추적 변경, 한글은 화면 변경 표시                                                                                  |
+| `rollbackExternalChange(token)` | Word 본문 snapshot 또는 한글의 사용자 변경 검사 undo. 이후 편집·다른 session·소비한 token이면 실패                                                            |
+| `clearChangeIndicators()`       | 화면 변경 표시 해제. 문서의 모든 revision 수락과 다름                                                                                                         |
+
+읽기는 **외부 전달용 뷰**다. Word는 기존 가리기 직렬화를 유지한다. 부분 표 선택을 전체 표로 넓혀 적용하지 않는다. 가린 문자의 placeholder를 원문으로 저장하게 되는 치환은 거절한다. 한글은 기존 plugin의 text 선택·치환, 메모·개체 보호와 56개 명령을 유지한다. 한글에는 restricted-html·Word식 tracked changes를 추가하지 않았다.
+
+`applyResult` 입력 예:
 
 ```ts
-type Revision = string
-type Preset = 'longform' | 'word' | 'hangul'
-
-type FailureCode =
-  | 'NOT_READY'
-  | 'READ_ONLY'
-  | 'UNSUPPORTED'
-  | 'INVALID_INPUT'
-  | 'OPEN_FAILED'
-  | 'EXPORT_FAILED'
-  | 'STALE_REVISION'
-  | 'SELECTION_EXPIRED'
-  | 'CANCELLED'
-
-type Result<T> =
-  { ok: true; value: T } | { ok: false; error: { code: FailureCode; message: string } }
-
-type ChangeEvent = {
-  documentKey: string
-  sessionId: string
-  revision: Revision
-  origin: 'user' | 'external' | 'undo' | 'redo'
-  dirty: boolean
+const selected = await api.getSelectionContent()
+if (selected.ok) {
+  const result = await api.applyResult({
+    ...selected.value,
+    format: 'restricted-html',
+    content: '<p>수정한 글</p>',
+    trackChanges: true,
+  })
 }
 ```
 
-공통 ref command는 `focus()`, `setReadOnly(boolean)`, `undo()`, `redo()`, `getStatus()`다. 반환은 native mount와 embed adapter를 함께 지원하도록 Promise/Result로 통일한다. Word/HWP undo 구현은 기존 엔진을 사용하며 공통 history engine을 새로 만들지 않는다.
+Word/longform은 `restricted-html`, 한글은 `text`만 받는다. token이 가리키는 원래 선택을 사용하므로 커서 이동이 수정 대상을 바꾸지 않는다. 단, 내용 revision이 바뀌면 거절한다. 지원하지 않는 범위를 문서 전체 수정으로 대체하지 않는다. 수락·복원은 추가 편집을 덮지 않도록 보수적으로 거절한다.
 
-`onReady` 전 호출은 `NOT_READY`다. React unmount가 renderer/frame/listener/request/bookmark를 정리한다. `documentKey`는 앱 문서 식별자이고 `sessionId`는 runtime이 새 문서를 로드할 때마다 바뀐다. revision은 내용 변경 시 증가하는 세션 내 opaque 값이다. 선택·focus만 바뀌면 dirty/revision을 바꾸지 않는다. 서버의 문서 버전과 같은 값으로 취급하지 않는다.
+## 공통 명령과 배포
 
-외부 비동기 응답은 documentKey와 sessionId가 다르면 버린다. undo로 과거 내용이 돌아와도 과거 revision 값을 재사용하지 않는다. 이 규칙 외에 영구 block ID·작업 재배치·자동 rebase는 이번에 만들지 않는다.
+`getStatus()`는 stamp·phase·dirty·readOnly, `focus()`·`setReadOnly(boolean)`는 void, `undo()`·`redo()`는 실행 여부를 반환한다. readOnly는 직접 입력과 외부 수정 명령에 모두 적용한다. 문서 자체의 쓰기 보호는 해제하지 못한다. AI 처리 동안의 별도 임시 잠금은 소비 앱의 6단계 통합 범위다.
 
-## 3. 기존 직렬화기와 변경 기능 재사용
+자산은 tarball의 `office-editor-assets`로 통째 복사하고 JS wrapper와 같은 버전을 같은 HTTP(S) origin에서 제공한다. Word는 확인된 전역 글꼴·스타일·언어 의존 때문에 frame을 사용하며 source/origin·protocol/instance/request를 검증한다. 한글은 기존 SDK bridge를 재사용한다. mount/unmount에서 listener·frame·request·선택·복원 자료를 정리한다. 프레임은 보안 sandbox가 아니다.
 
-아래는 엔진별 기존 함수 위에 두는 얇은 wrapper다. 함수 이름은 제안이며 실제 소스와 의존 경계는 [추출 목록](./ai-extraction-map.md)에 고정한다.
+## 6단계에 남은 계약
 
-| API                                   | 재사용할 구현과 계약                                                                                                                                          |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `getDocumentContext()`                | Markdown `buildDocContext`의 블록 개요. 도구 사용 지시문을 제거하고 개요의 잘림을 명시. 다른 엔진은 확인한 동등 기능만 연결                                   |
-| `readBlocks(range)`                   | Markdown `serializeBlocks`, Word `serializeRangeToHtml`. Word/Markdown 범위는 해당 revision의 최상위 블록 인덱스이며 양끝 포함. 엔진별 출력 형식 명시         |
-| `getSelectionContent()`               | Markdown `selectionMarkdown`·`blockIndexRange`, Word `getSelectionScope`·`partialSelection`·제한 HTML, 한글 기존 `selection`/읽기 API를 지원 범위 안에서 연결 |
-| `clearChangeIndicators()`             | 기존 Decoration 또는 `aiChanged` 표시 해제. 문서의 추적 변경 수락과 구분                                                                                      |
-| `acceptExternalChanges(changeToken)`  | Word의 기존 revision 수락 처리 등 엔진 지원 기능. 대상 외부 변경만 수락하며 다른 작성자의 변경을 함께 수락하지 않음                                           |
-| `rollbackExternalChange(changeToken)` | 기존 snapshot/복원 또는 한글의 사용자 변경 검사를 가진 undo. 캡처 범위와 부수 상태를 확인한 변경만 지원                                                       |
-
-읽기 결과는 `documentKey`, `sessionId`, `revision`, `format`, `content`, `truncated`를 포함하고 선택 결과에는 `selectionToken`을 포함한다. `format`은 `text | markdown | restricted-html`로 실제 내용을 설명한다. Markdown의 `selectionMarkdown`은 현재 일반 선택 텍스트이므로 `text`로 반환한다. 현재 agent용 글자 수 제한을 그대로 일반 선택 API에 숨기지 않고, 개요 생략과 전체 선택 읽기를 구별한다.
-
-`selectionToken`은 동일 문서/session/revision의 원래 범위를 가리킨다. Word `partialSelection`이 지원하지 않는 표 내부 문자 범위를 전체 표로 넓혀 적용하지 않는다. 엔진에 대응 기능이 없으면 `UNSUPPORTED`로 반환하며 새 범용 의미 추출기로 채우지 않는다.
-
-이 읽기 API는 **외부 전달용 뷰**이며 기존 가리기 동작을 유지한다. 원본 로드/저장 serializer는 원문과 가리기 메타데이터를 보존한다. 가린 문서를 지원하면서 외부 뷰에서 그 가리기를 지킬 수 없는 경로는 전송용 읽기를 실패시킨다. 이 API만으로 서버가 다시 읽는 원문까지 가려진다고 보장하지 않는다.
-
-`changeToken`은 적용 시점의 문서/session, 적용 직후 revision과 해당 변경 범위를 식별하는 세션 내 토큰이다. 원래 snapshot과 복원에 필요한 상태는 runtime 안에 둔다. 전체 snapshot 복원 전에 후속 편집 여부를 검사하고, 안전하게 복원할 수 없으면 `STALE_REVISION` 등 실패를 반환한다. Word의 snapshot이 별도 note/header/footer 상태까지 복구한다고 가정하지 않는다. 일반 `undo()`와 특정 외부 변경 거절을 같은 동작으로 취급하지 않는다.
-
-이 wrapper를 위해 새 diff/proposal engine을 만들지 않는다. `AiPanel` 안의 수락/복원 handler와 타입을 먼저 옮겨 기존 동작을 UI 밖에서 호출하게 한다. 엔진마다 지원 범위를 명시한다.
-
-## 4. 롱폼 전용 계약
-
-```ts
-type LegacySnapshot = {
-  documentKey: string
-  sessionId: string
-  revision: Revision
-  // 동일 시점의 문서에서 만든 직렬화 복사본.
-  html: string
-  htmlWithSelectionMarkers: string | null
-  selectionToken: string | null
-  selectedText: string
-}
-
-type ApplyResultInput = {
-  documentKey: string
-  sessionId: string
-  expectedRevision: Revision
-  htmlFormat: 'editor-html' | 'restricted-html'
-  result:
-    { kind: 'document'; html: string } | { kind: 'selection'; selectionToken: string; html: string }
-}
-```
-
-| API                               | 기능                                                                                                    |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `loadHtml({ documentKey, html })` | 기존 문서/버전을 로드. 이전 session·선택·history를 정리. 초기 로드로 저장 이벤트를 만들지 않음          |
-| `captureLegacy()`                 | 같은 revision의 HTML·선택을 캡처. HTML은 저장 훅, marker HTML은 기존 범위 계산에 사용                   |
-| `applyResult(input)`              | HTML sanitize와 문서/session/revision/선택 확인 후 한 undo 단위로 적용. 앱이 기존 승인/반영 시점에 호출 |
-| `markSaved({ revision })`         | 저장 완료한 revision을 표시. 그사이 새 편집이 있으면 현재 dirty를 지우지 않음                           |
-
-`htmlWithSelectionMarkers`는 현재 `getMarkedPosition`과 호환되는 `<mark>`를 **직렬화 복사본**에 삽입한 값이다. 선택 표시는 실제 문서의 mark와 undo history에 들어가지 않는다. longform preset에서는 선택 표현과 충돌하는 새 사용자 highlight 기능을 추가하지 않는다. 이 호환 코드는 longform adapter 안에 가두고 Word/HWP 원본 저장 경로에서는 쓰지 않는다.
-
-`captureLegacy()`의 HTML은 원문 저장/기존 범위 계산용이다. 가리기가 적용된 외부 뷰라고 해석하지 않는다. 기존 롱폼 AI 경로가 저장 원문을 다시 읽는다면 소비 앱에서 전체 전달 경로를 확인한다. 가리기 보호를 지킬 수 없는 기존 경로에서는 가린 문서의 AI 요청을 차단하며 원본 저장을 가린 HTML로 바꾸지 않는다.
-
-앱은 marker HTML을 기존 변환 함수에 넣어 `latestContent`를 만들고, 동일 문자열에서 mark 제거 저장본과 `selectedBlockRange`를 계산한다. 서로 다른 시점에 `getHTML()`을 두 번 읽지 않는다. 저장 스킵 시에도 같은 캡처의 범위를 사용한다. 서버의 UTF offset 의미는 변경하지 않는다.
-
-본문 일부·여러 연속 블록의 선택을 우선 지원하고, 표 안 선택은 기존 앱의 지원 수준을 회귀 검증한다. 대응되는 기존 offset을 만들 수 없는 선택은 AI 요청을 막고 명시적으로 알린다. 선택 실패를 전체 문서 요청으로 바꾸지 않는다.
-
-AI 처리 중 잠금은 앱이 관리한다. 허용되는 최종 `applyResult`는 사용자 편집 잠금 상태에서도 앱의 명시적 명령으로 실행할 수 있으며, document/session/revision 검사는 생략하지 않는다. 사용자 read-only 권한과 AI 처리 중 일시 잠금은 앱에서 구분한다.
-
-`applyResult`는 범용 diff 도구를 만들지 않고 기존 앱의 stream/diff/버전 UI와 연결한다. `loadHtml`을 AI 결과 반영에 쓰면 history가 사라지므로 구분한다. 부분 선택 변경에서 보호 필드·인용 구조를 안전하게 보존할 수 없으면 적용 실패로 반환하고 원문을 유지한다.
-
-`editor-html`은 기존 롱폼 변환 결과를 현재 편집 schema로 파싱하는 경로다. `restricted-html`은 Word에서 추출한 `parseHtmlFragment`와 `replaceBlockRange`/`replaceInlineRange`를 사용한다. 두 HTML의 지원 범위를 같다고 가정하거나 parser를 묵시적으로 바꾸지 않는다. 서식 상속·추적 변경·원본 anchor 처리도 함께 보존한다. 적용 결과는 새 revision과 `changeToken`을 반환해 표시·수락·복원 API에 연결한다.
-
-원본 저장의 품질을 높이기 위한 새 JSON schema나 LLM 전용 표현은 이번에 넣지 않는다. 기존 직렬화기 재사용은 포함한다. longform preset을 기존 저장 형식의 지원 범위에 맞추고, Word/HWP 파일 편집은 bytes 원본으로 분리한다.
-
-## 5. Word·한글 파일 계약
-
-```ts
-type FileFormat = 'docx' | 'hwp' | 'hwpx'
-
-type OpenFileInput = {
-  documentKey: string
-  format: FileFormat
-  fileName: string
-  bytes: Uint8Array
-}
-
-type ExportedFile = {
-  documentKey: string
-  sessionId: string
-  revision: Revision
-  format: FileFormat
-  fileName: string
-  bytes: Uint8Array
-}
-```
-
-`openFile(input)`과 `exportFile()`을 제공한다. Word preset은 DOCX만, hangul preset은 HWP/HWPX만 받는다. export는 연 문서와 같은 형식으로 수행하며 변환 옵션을 만들지 않는다. 열기 실패 시 빈 문서를 원본 파일명으로 export하지 못하게 한다.
-
-파일은 `File.arrayBuffer()`로 읽고 bytes를 runtime으로 전달한다. 다운로드는 앱이 Blob으로 처리한다. `file://`, 사용자 로컬 path, OS dialog, Electron IPC를 요구하지 않는다. 이미지·폰트·원본 package parts는 기존 문서 엔진에서 유지하며 무거운 전체 bytes를 `onChange`마다 전송하지 않는다.
-
-export 완료 전에는 저장 성공으로 표시하지 않는다. 사용자 편집 중 export를 허용한다면 export가 읽는 revision을 고정하고 그 revision만 저장됐다고 알린다. MVP에서는 export 동안 짧게 편집을 잠가 일관성을 확보하는 방식을 우선한다. 실패 시 dirty와 원본을 유지하고 재시도할 수 있어야 한다.
-
-bytes를 반환하는 이 API는 파일 저장 기능이다. AI에 문서를 어떻게 전달할지, 읽기 순서를 어떻게 추정할지 결정하지 않는다.
-
-## 6. bridge와 배포 경계
-
-아래 메시지 계약은 기존 HWP embed 또는 분리 필요성이 확인된 웹 runtime에 적용한다. Word를 직접 React로 mount하는 경로에는 불필요한 메시지 transport를 만들지 않는다.
-
-메시지는 protocol version, instanceId, requestId, command와 검증된 payload로 제한한다. 부모와 frame 양쪽에서 `event.source`와 예상 origin을 검사하고 `postMessage`의 targetOrigin을 명시한다. 허용 command 이외의 임의 JS 실행, Electron IPC channel forwarding, 임의 URL fetch를 제공하지 않는다.
-
-frame은 같은 origin의 고정된 자산 경로에서 제공한다. 이 frame은 CSS/전역 상태 격리 목적이며 악성 문서에 대한 보안 sandbox라고 주장하지 않는다. 문서 HTML과 링크는 기존 sanitize 경로를 유지하고 외부 resource 자동 접근을 제한한다. 정적 자산과 runtime manifest의 version mismatch는 부팅 오류로 드러나야 한다.
-
-한글은 기존 `@rhwp/editor`의 studio/plugin 통신을 재사용한다. 우리 wrapper와 라이브러리 사이에 기존 bridge가 있으면 같은 기능의 메시지 계층을 또 만들지 않는다. Word 쪽에서도 기존 명령을 가능한 한 보존하고 file/asset transport만 대체한다.
-
-한글의 `agent-plugin.mjs`, 선언 타입, `ai/agent-bridge`에 연결된 **56개 메서드를 모두 보존**한다. [확인한 메서드 목록](./ai-extraction-map.md#3-한글-56개-메서드-확인)을 추출 검증에 사용한다. 웹에서 별도 host 처리가 필요한 파일 메뉴/인쇄도 명시적 adapter 또는 미지원 응답을 갖춘다. 이름에 AI가 있다는 이유로 HWP export·메모·undo를 함께 삭제하지 않는다. 배포에 포함되는 편집 유틸리티는 AI 실행 코드와 import 경계를 분리한다.
-
-## 7. 후속 확장 자리만 남긴다
-
-- 문서 IO, 선택, 외부 변경은 앱의 AI 훅과 분리한다.
-- 엔진 내부 native document model과 원본 bytes를 유지한다.
-- HTML/Markdown 호환은 longform adapter에 한정한다.
-- 기존 직렬화·선택 추출 API는 이번에 구현한다. 후속 semantic extractor를 붙일 수 있도록 runtime 문서 접근 경계를 유지하되, 빈 `extractSemantic()` API를 공개하지 않는다.
-- public ref API는 Tiptap 객체나 frame 객체를 반환하지 않는다. 후속 inline renderer나 새로운 저장 형식으로 바꿀 때 앱 변경 범위를 제한한다.
-
-이번 완료 조건은 이 API의 양이 아니라 롱폼 동작과 DOCX/HWP/HWPX의 실제 편집·저장 왕복이다.
+슈퍼로이어의 원래 Markdown 저장·HTML 변환, 같은 시점의 HTML/marker/선택 캡처(`captureLegacy`), 기존 offset 계산, 인용 구조 보존, 늦은 AI 응답/취소/일시 잠금 통합은 아직 공개 API에 넣지 않았다. [실행 계획](./editor-architecture.md)의 6단계에서 실제 소비 앱과 맞춘다. [이전 상세 설계](./editor-contracts-v1.md)는 후속 검토 자료이며 현재 구현 목록이 아니다.

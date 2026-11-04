@@ -57,7 +57,8 @@
     "test:editor": "npm run test -w @lawcompany/editor",
     "typecheck:editor": "npm run typecheck -w @lawcompany/editor",
     "check:editor": "npm run check:baseline && npm run typecheck:editor && npm run test:editor && npm run build:editor && npm run build:web",
-    "check:hangul-parity": "node tools/editor/check-hangul-parity.mjs"
+    "check:hangul-parity": "node tools/editor/check-hangul-parity.mjs",
+    "pack:editor": "node tools/editor/pack-editor.mjs"
   },
   "dependencies": {
     "ws": "^8.21.1"

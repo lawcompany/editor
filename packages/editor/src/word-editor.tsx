@@ -67,8 +67,16 @@ export function WordEditor({
   lang = 'ko',
   onReady,
   write = downloadDocx,
+  onStatus,
+  onError,
+  managed = false,
+  longform = false,
 }: {
   lang?: Lang
+  onStatus?: (status: WordStatus) => void
+  onError?: (error: unknown) => void
+  managed?: boolean
+  longform?: boolean
   onReady?: (session: WordSession) => void
   write?: (bytes: Uint8Array, name: string) => Promise<void>
 }) {
@@ -76,6 +84,8 @@ export function WordEditor({
   const [status, setStatus] = useState<WordStatus | null>(null)
   const [, refresh] = useState(0)
   const file = useRef<HTMLInputElement>(null)
+  const statusCallback = useRef(onStatus)
+  statusCallback.current = onStatus
   const ready = useRef(onReady)
   ready.current = onReady
   const t = (key: StringKey) => translate(lang, key)
@@ -86,7 +96,12 @@ export function WordEditor({
     setModuleLang(lang)
   }, [lang])
   useEffect(() => {
-    const next = createWordSession({ onChange: setStatus })
+    const next = createWordSession({
+      onChange: (value) => {
+        setStatus(value)
+        statusCallback.current?.(value)
+      },
+    })
     setSession(next)
     void next
       .newDocument()
@@ -106,6 +121,7 @@ export function WordEditor({
     }
   }, [editor])
   useEffect(() => {
+    if (managed) return
     const leave = (event: BeforeUnloadEvent) => {
       if (!session?.getStatus().dirty) return
       event.preventDefault()
@@ -113,13 +129,17 @@ export function WordEditor({
     }
     window.addEventListener('beforeunload', leave)
     return () => window.removeEventListener('beforeunload', leave)
-  }, [session])
+  }, [session, managed])
   const run = (action: () => unknown) => {
     setActionError('')
-    try {
-      void Promise.resolve(action()).catch((error: unknown) => setActionError(String(error)))
-    } catch (error) {
+    const report = (error: unknown) => {
       setActionError(String(error))
+      onError?.(error)
+    }
+    try {
+      void Promise.resolve(action()).catch(report)
+    } catch (error) {
+      report(error)
     }
   }
   const save = () => session?.saveTo(write)
@@ -168,13 +188,13 @@ export function WordEditor({
     : undefined
   return (
     <div
-      className="word-browser"
+      className={`word-browser${managed ? ' word-managed' : ''}${longform ? ' word-longform' : ''}`}
       data-phase={status?.phase ?? 'empty'}
       data-dirty={status?.dirty ?? false}
       onKeyDown={(event) => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
           event.preventDefault()
-          if (!busy) run(save)
+          if (!busy && !managed) run(save)
         }
       }}
     >

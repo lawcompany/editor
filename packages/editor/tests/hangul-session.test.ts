@@ -240,3 +240,45 @@ describe('Hangul browser sessions', () => {
     expect(svg.querySelector('clipPath')?.id).toBe('p0-clip')
   })
 })
+
+describe('Hangul controlled read-only lifecycle', () => {
+  it('keeps the input lock through load, export and failed replacement', async () => {
+    const h = setup()
+    await h.session.setReadOnly(true)
+    await h.session.load(blank, 'readonly.hwp')
+    expect(h.session.getStatus().readOnly).toBe(true)
+    expect(h.invoke.mock.calls.filter((call) => call[1] === 'setMemoLock').at(-1)?.[2]).toEqual([
+      true,
+    ])
+    await h.session.exportBytes()
+    expect(h.invoke.mock.calls.filter((call) => call[1] === 'setMemoLock').at(-1)?.[2]).toEqual([
+      true,
+    ])
+    h.failLoad()
+    await expect(h.session.load(blank, 'failed.hwp')).rejects.toThrow()
+    expect(h.invoke.mock.calls.filter((call) => call[1] === 'setMemoLock').at(-1)?.[2]).toEqual([
+      true,
+    ])
+    await h.session.setReadOnly(false)
+    expect(h.invoke.mock.calls.filter((call) => call[1] === 'setMemoLock').at(-1)?.[2]).toEqual([
+      false,
+    ])
+  })
+})
+
+it('acknowledges the engine baseline only for the exact persisted revision', async () => {
+  const h = setup()
+  await h.session.load(blank, 'saved.hwp')
+  h.dirty()
+  const revision = h.session.getStatus().revision
+  h.notifySaved.mockImplementation(async () => {
+    h.frames.at(-1)!.contentWindow!.dispatchEvent(new CustomEvent(DIRTY_EVENT, { detail: false }))
+  })
+  await h.session.markSaved(revision)
+  expect(h.notifySaved).toHaveBeenCalledOnce()
+  expect(h.session.getStatus()).toMatchObject({ dirty: false, revision })
+  h.dirty()
+  await expect(h.session.markSaved(revision)).rejects.toThrow('STALE_REVISION')
+  expect(h.notifySaved).toHaveBeenCalledOnce()
+  expect(h.session.getStatus().dirty).toBe(true)
+})

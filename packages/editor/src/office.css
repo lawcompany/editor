@@ -1,0 +1,6 @@
+.lc-office-editor {
+  position: relative;
+  isolation: isolate;
+  contain: layout paint;
+  overflow: hidden;
+}

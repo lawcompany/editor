@@ -345,10 +345,12 @@ export function MemoPanelView({
   locale,
   host,
   crossTabLock = true,
+  portalTarget,
 }: MemoPanelProps & {
   locale: { lang: Lang; t: (key: StringKey, params?: Params) => string }
   host: Partial<Pick<HwpApi, 'getMemoModalOpen' | 'setMemoModalOpen' | 'getAuthorName'>>
   crossTabLock?: boolean
+  portalTarget?: HTMLElement
 }): ReactElement {
   const { lang, t } = locale
   const rtl = lang === 'ar' || lang === 'he'
@@ -738,9 +740,10 @@ export function MemoPanelView({
         void saveRef.current()
       }
     }
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [modalOpen, closeEditor, busy])
+    const target = portalTarget ?? window
+    target.addEventListener('keydown', onKey as EventListener, true)
+    return () => target.removeEventListener('keydown', onKey as EventListener, true)
+  }, [modalOpen, closeEditor, busy, portalTarget])
 
   const remove = useCallback(
     async (memo: AgentMemo) => {
@@ -986,7 +989,7 @@ export function MemoPanelView({
           })
         )}
       </div>
-      {modal && createPortal(modal, document.body)}
+      {modal && createPortal(modal, portalTarget ?? document.body)}
     </aside>
   )
 }

@@ -177,6 +177,7 @@ export function createWordSession(options: { onChange?: (status: WordStatus) => 
         if (!content.content.length) content.content = [{ type: 'docParagraph' }]
       }
       candidate.commands.setContent(content, { emitUpdate: false })
+      if (html !== undefined) clearChangeIndicators(candidate, true)
       // A fresh editor/history prevents undo from crossing document sessions.
       const fresh = EditorState.create({
         doc: candidate.state.doc,
@@ -293,6 +294,12 @@ export function createWordSession(options: { onChange?: (status: WordStatus) => 
           emit({ phase: 'ready', error: { code: 'EXPORT_FAILED', message: String(error) } })
         throw error
       }
+    },
+    markSaved(revision: number) {
+      const { editor } = current()
+      if (revision !== status.revision) throw new Error('STALE_REVISION')
+      savedKey = documentKey(editor.state.doc)
+      emit({ dirty: false })
     },
     setReadOnly(value: boolean) {
       const { editor, parsed } = current()
